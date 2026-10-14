@@ -150,6 +150,7 @@ textarea{width:100%;font:inherit;font-size:.9rem;color:var(--ink);background:var
     <h2>3. 신청서로 이동하세요</h2>
     <textarea id="out" readonly placeholder="시간을 칠하면 여기에 선택 내용이 정리됩니다."></textarea>
     <div style="display:flex;gap:10px;align-items:center;margin-top:8px;flex-wrap:wrap">
+      <button class="b" id="submit" disabled hidden>신청 보내기</button>
       <a class="b" id="go" href="#" target="_blank" rel="noopener" aria-disabled="true" style="text-decoration:none">신청서 열기</a>
       <button class="btn" id="copy" disabled>선택 내용 복사</button>
     </div>
@@ -170,6 +171,7 @@ textarea{width:100%;font:inherit;font-size:.9rem;color:var(--ink);background:var
   var PX=0.9;               // pixels per minute
   var TAKEN=[];             // closed intervals, e.g. [{"c":0,"s":"10:00","e":"12:30"}] ; c = 0 Mon .. 5 Sat. Copy it from the admin page.
   var FORM_URL='';          // sign-up form link (Google Form: .../viewform). Empty = copy-and-paste mode
+  var SCRIPT_URL='';        // Apps Script web app (.../exec). When set, the page submits directly and loads closed intervals from it
   var FORM_ENTRY='';        // the form field that receives the schedule, e.g. entry.1234567890
   var DOW=['월','화','수','목','금','토'];
   /* consent text: fill every [bracket] before publishing the link. Items left in brackets are shown in red. */
@@ -296,9 +298,27 @@ textarea{width:100%;font:inherit;font-size:.9rem;color:var(--ink);background:var
     out.value=parts.length?('이름: '+(nm||'미입력')+' | 학번: '+(sid||'미입력')+' | 학과: '+(dept||'미입력')+' | 연락처: '+(ph||'미입력')+' | 만 19세 이상: '+(adult?'예':'아니오')+' | 규정 확인: '+(rules?'예':'아니오')+' | 가능한 일정 — '+parts.join(' | ')+' | 머리 감기: '+(w||'미선택')+' | 방문 1회 소요: '+durText(N)+' | 개인정보 수집·이용 동의: '+(agreed?'예':'아니오')+' | 영상 녹화 동의: '+(vid?'예':'아니오')):'';
     var ready=done>0&&!!w&&shortN===0&&agreed&&vid&&!!nm&&!!sid&&!!dept&&ph.replace(/\D/g,'').length>=9&&adult&&rules;
     btn.disabled=!ready; setGo(ready,out.value);
+    var sb=document.getElementById('submit');
+    if(sb&&SCRIPT_URL){ sb.hidden=false; sb.disabled=!ready||sent; if(sent) sb.textContent='신청이 접수되었습니다' }
     msg.className='small '+(items.length&&!ready&&!(agreed===false&&done>0&&w&&!shortN&&false)?'warn':'mut');
-    msg.textContent=!items.length?'가능한 시간을 칠하면 신청서로 이동할 수 있습니다.':!w?'머리를 감고 가실지 먼저 골라 주세요.':!agreed?'개인정보 수집·이용에 동의해야 신청할 수 있습니다.':!vid?'영상 녹화에 동의해야 신청할 수 있습니다.':(!nm||!sid||!dept||ph.replace(/\D/g,'').length<9)?'이름, 학번, 학과, 연락처를 모두 입력해 주세요.':!adult?'만 19세 이상이어야 참여할 수 있습니다.':!rules?'참가비와 중도 하차 규정을 확인해 주세요.':shortN?'방문 한 번('+durText(N)+')보다 짧은 시간대가 '+shortN+'개 있습니다(빨간색). 늘리거나 지워 주세요.':!done?'월수금 또는 화목토 중 한 묶음은 세 날 모두 칠해야 합니다.':(partial.length?'미완성 묶음('+partial.join(', ')+')은 신청에 포함되지만 배정되지 않을 수 있습니다. ':'')+(FORM_URL?'‘신청서 열기’를 누르면 고른 일정이 미리 입력된 신청서가 열립니다.':'신청서 주소가 아직 연결되지 않았습니다. 선택 내용을 복사해 신청서의 ‘가능한 일정’ 칸에 붙여 넣어 주세요.');
+    msg.textContent=!items.length?'가능한 시간을 칠하면 신청서로 이동할 수 있습니다.':!w?'머리를 감고 가실지 먼저 골라 주세요.':!agreed?'개인정보 수집·이용에 동의해야 신청할 수 있습니다.':!vid?'영상 녹화에 동의해야 신청할 수 있습니다.':(!nm||!sid||!dept||ph.replace(/\D/g,'').length<9)?'이름, 학번, 학과, 연락처를 모두 입력해 주세요.':!adult?'만 19세 이상이어야 참여할 수 있습니다.':!rules?'참가비와 중도 하차 규정을 확인해 주세요.':shortN?'방문 한 번('+durText(N)+')보다 짧은 시간대가 '+shortN+'개 있습니다(빨간색). 늘리거나 지워 주세요.':!done?'월수금 또는 화목토 중 한 묶음은 세 날 모두 칠해야 합니다.':(partial.length?'미완성 묶음('+partial.join(', ')+')은 신청에 포함되지만 배정되지 않을 수 있습니다. ':'')+(SCRIPT_URL?'‘신청 보내기’를 누르면 바로 접수됩니다.':FORM_URL?'‘신청서 열기’를 누르면 고른 일정이 미리 입력된 신청서가 열립니다.':'신청서 주소가 아직 연결되지 않았습니다. 선택 내용을 복사해 신청서의 ‘가능한 일정’ 칸에 붙여 넣어 주세요.');
   }
+  var sent=false;
+  function payload(){
+    var g=function(i){ return document.getElementById(i) };
+    var wins=items.map(function(x){ return {week:x.w,c:x.c,s:hhmm(x.s),e:hhmm(x.e)} });
+    return {name:g('nm').value.trim(),sid:g('sid').value.trim(),dept:g('dept').value.trim(),phone:g('ph').value.trim(),
+      wash:wash(),visitMin:need(),schedule:g('out').value,windows:wins,
+      consent:g('agree').checked,video:g('vid').checked,rules:g('rules').checked,adult:g('adult').checked};
+  }
+  document.addEventListener('click',function(e){
+    if(e.target.id!=='submit'||!SCRIPT_URL||sent) return;
+    var sb=e.target; sb.disabled=true; sb.textContent='보내는 중…';
+    fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload())})
+      .then(function(){ sent=true; summarize(); var m=document.getElementById('msg'); m.className='small'; m.textContent='신청이 접수되었습니다. 검토 후 연락드리겠습니다.' })
+      .catch(function(){ sb.disabled=false; sb.textContent='신청 보내기'; notice('전송에 실패했습니다. 인터넷 연결을 확인하고 다시 눌러 주세요.') });
+  });
+  if(SCRIPT_URL){ fetch(SCRIPT_URL+'?action=taken').then(function(r){return r.json()}).then(function(a){ if(Array.isArray(a)){ TAKEN=a; items.forEach(fit); render() } }).catch(function(){}) }
   function setGo(ready,text){
     var a=document.getElementById('go'), ok=ready&&FORM_URL;
     a.setAttribute('aria-disabled',ok?'false':'true');
