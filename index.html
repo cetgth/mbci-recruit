@@ -102,6 +102,19 @@ textarea{width:100%;font:inherit;font-size:.9rem;color:var(--ink);background:var
     </dl>
   </section>
 
+  <details class="panel" id="lk" hidden>
+    <summary style="cursor:pointer;font-weight:600">이미 신청하셨나요? 신청 내역 확인</summary>
+    <div class="grid2" style="margin-top:12px">
+      <label class="fld">학번<input type="text" id="lksid" inputmode="numeric" maxlength="12" autocomplete="off"></label>
+      <label class="fld">연락처<input type="tel" id="lkph" inputmode="numeric" maxlength="13" placeholder="010-0000-0000"></label>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center;margin-top:10px;flex-wrap:wrap">
+      <button class="btn" id="lkgo" type="button">내역 확인</button>
+      <span class="small mut">신청하실 때 입력한 학번과 연락처를 넣어 주세요. 일정을 바꾸려면 이 페이지에서 다시 신청하시면 가장 최근 신청이 적용됩니다.</span>
+    </div>
+    <div id="lkout" class="small" style="margin-top:12px"></div>
+  </details>
+
   <section class="panel consent">
     <h2>개인정보 수집·이용 동의</h2>
     <p class="small mut" style="margin-bottom:10px">실험 참가 신청과 일정 조율을 위해 아래와 같이 개인정보를 수집·이용합니다. 내용을 읽고 동의해 주세요.</p>
@@ -317,6 +330,25 @@ textarea{width:100%;font:inherit;font-size:.9rem;color:var(--ink);background:var
     msg.textContent=!items.length?'가능한 시간을 칠해 주세요.':!w?'머리를 감고 가실지 먼저 골라 주세요.':!agreed?'개인정보 수집·이용에 동의해야 신청할 수 있습니다.':!vid?'영상 녹화에 동의해야 신청할 수 있습니다.':(!nm||!sid||!dept||ph.replace(/\D/g,'').length<9)?'이름, 학번, 학과, 연락처를 모두 입력해 주세요.':!adult?'만 19세 이상이어야 참여할 수 있습니다.':!rules?'참가비와 중도 하차 규정을 확인해 주세요.':shortN?'방문 한 번('+durText(N)+')보다 짧은 시간대가 '+shortN+'개 있습니다(빨간색). 늘리거나 지워 주세요.':!done?'월수금 또는 화목토 중 한 묶음은 세 날 모두 칠해야 합니다.':(partial.length?'미완성 묶음('+partial.join(', ')+')은 신청에 포함되지만 배정되지 않을 수 있습니다. ':'')+(SCRIPT_URL?'‘신청 보내기’를 누르면 바로 접수됩니다.':'');
   }
   var sent=false;
+  (function(){
+    var box=document.getElementById('lk'); if(!box||!SCRIPT_URL) return; box.hidden=false;
+    var esc=function(t){ return String(t==null?'':t).replace(/&/g,'&amp;').replace(/</g,'&lt;') };
+    document.getElementById('lkgo').addEventListener('click',function(){
+      var sid=document.getElementById('lksid').value.trim(), ph=document.getElementById('lkph').value.trim(), out=document.getElementById('lkout');
+      if(!sid||ph.replace(/\D/g,'').length<9){ out.textContent='학번과 연락처를 입력해 주세요.'; return }
+      out.textContent='확인하는 중…';
+      fetch(SCRIPT_URL+'?action=lookup&sid='+encodeURIComponent(sid)+'&phone='+encodeURIComponent(ph)).then(function(r){return r.json()}).then(function(d){
+        if(!d.found){ out.textContent='일치하는 신청 내역이 없습니다. 학번과 연락처를 확인해 주세요.'; return }
+        var st=d.status==='대기'?'검토 중':d.status;
+        out.innerHTML='<dl style="display:grid;grid-template-columns:auto 1fr;gap:6px 12px;margin:0">'
+          +'<dt class="mut">이름</dt><dd style="margin:0">'+esc(d.name)+'</dd>'
+          +'<dt class="mut">접수 시각</dt><dd style="margin:0">'+esc(d.submitted)+'</dd>'
+          +'<dt class="mut">가능한 일정</dt><dd style="margin:0">'+esc(d.schedule)+'</dd>'
+          +'<dt class="mut">머리 감기</dt><dd style="margin:0">'+esc(d.wash)+'</dd>'
+          +'<dt class="mut">상태</dt><dd style="margin:0"><b>'+esc(st)+'</b></dd></dl>';
+      }).catch(function(){ out.textContent='확인하지 못했습니다. 잠시 뒤 다시 시도해 주세요.' });
+    });
+  })();
   function payload(){
     var g=function(i){ return document.getElementById(i) };
     var wins=items.map(function(x){ return {week:x.w,c:x.c,s:hhmm(x.s),e:hhmm(x.e)} });
@@ -425,7 +457,7 @@ textarea{width:100%;font:inherit;font-size:.9rem;color:var(--ink);background:var
     return d.slice(0,3)+'-'+d.slice(3,7)+'-'+d.slice(7);
   }
   document.addEventListener('input',function(e){
-    if(e.target.id==='ph'){ var el=e.target, f=fmtPhone(el.value,/^delete/.test(e.inputType||'')); if(el.value!==f) el.value=f; }
+    if(e.target.id==='ph'||e.target.id==='lkph'){ var el=e.target, f=fmtPhone(el.value,/^delete/.test(e.inputType||'')); if(el.value!==f) el.value=f; }
     if(e.target.id==='nm'||e.target.id==='ph'||e.target.id==='sid'||e.target.id==='dept') summarize();
   });
   var resetBtn=document.getElementById('reset'), resetT=0;
