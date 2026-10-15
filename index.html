@@ -70,6 +70,12 @@ textarea{width:100%;font:inherit;font-size:.9rem;color:var(--ink);background:var
 .b[aria-disabled="true"]{opacity:.45;cursor:default;pointer-events:none}
 .warn{color:var(--bad)}
 .fld{display:flex;flex-direction:column;gap:4px;font-size:.88rem;color:var(--mut)}
+.q{display:flex;gap:10px 16px;justify-content:space-between;flex-wrap:wrap;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
+.q:first-child{border-top:0}
+.q .t{flex:1 1 320px;font-size:.92rem}
+.q .ch{display:flex;gap:14px}
+.q label{display:flex;gap:6px;align-items:center;cursor:pointer;min-height:36px}
+.q input{accent-color:var(--a)}
 .fld input[type=text],.fld input[type=tel],.fld input[type=email]{font:inherit;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:9px 10px;min-height:42px}
 .fld input:focus-visible{outline:2px solid var(--ink);outline-offset:1px}
 .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
@@ -138,6 +144,13 @@ textarea{width:100%;font:inherit;font-size:.9rem;color:var(--ink);background:var
   </section>
 
   <section class="panel">
+    <h2>참가 조건 확인</h2>
+    <p class="small mut" style="margin-bottom:6px">뇌파와 근전도를 측정하는 실험이라, 아래에 해당하면 참여가 어렵습니다. 모든 항목에 ‘예’ 또는 ‘아니오’로 답해 주세요. 진단서 등은 요구하지 않으며, 응답은 참가 가능 여부를 확인하는 데에만 사용합니다.</p>
+    <div id="screen"></div>
+    <p class="small warn" id="scWarn" hidden style="margin-top:8px">해당하는 항목이 있으면 이번 실험에는 참여하실 수 없습니다. 관심을 가져 주셔서 감사합니다.</p>
+  </section>
+
+  <section class="panel">
     <h2>1. 머리를 감고 가실지 먼저 고르세요</h2>
     <p class="small" style="margin-bottom:10px">뇌파를 측정하기 위해 두피에 <b>전도성 젤</b>을 바릅니다. 그래서 실험이 끝난 뒤 <b>머리를 감을 수 있는 공간이 마련되어 있습니다.</b> 감고 가시면 방문이 30분 늘어납니다.</p>
     <div class="wash">
@@ -202,6 +215,15 @@ textarea{width:100%;font:inherit;font-size:.9rem;color:var(--ink);background:var
   var SCRIPT_URL='https://script.google.com/macros/s/AKfycbzldz3xryZpWzQ0GEWMz08DcO8KT3cEyMSm7CWbC8dtMQT5J8pjtst0UQPhbnn10hoS/exec';        // Apps Script web app (.../exec). When set, the page submits directly and loads closed intervals from it
   var FORM_ENTRY='';        // the form field that receives the schedule, e.g. entry.1234567890
   var DOW=['월','화','수','목','금','토'];
+  var SCREEN=[
+    '평소 대화나 음악을 듣는 데 어려움이 있거나, 보청기·인공와우를 사용하거나, 이명이 심합니다.',
+    '안경 없이, 또는 콘택트렌즈를 끼고도 화면의 글자를 읽기 어렵습니다.',
+    '한국어 안내문을 읽고 지시에 따라 과제를 수행하기 어렵습니다.',
+    '뇌전증(간질)이나 발작을 겪은 적이 있습니다.',
+    '뇌 질환, 심한 두부 외상 또는 신경계 질환으로 진단·치료받은 적이 있습니다.',
+    '집중력이나 각성에 영향을 주는 약물(예: 정신과 약물, 수면제)을 현재 복용 중입니다.',
+    '두피에 상처·염증·피부질환이 있거나, 전도성 젤에 알레르기가 있습니다.'
+  ];
   /* consent text: fill every [bracket] before publishing the link. Items left in brackets are shown in red. */
   var CONSENT=[
     ['수집·이용 목적','실험 참가자 모집, 참가 자격 확인, 방문 일정 조율 및 연락(확정 안내와 방문 전날 안내 메일 발송 포함), 참가비 지급'],
@@ -228,6 +250,20 @@ textarea{width:100%;font:inherit;font-size:.9rem;color:var(--ink);background:var
   var items=[];            // {id,w,c,s,e}  c = day column 0..5 (Mon..Sat), group = c%2
   var seq=1, drag=null, sel=null, lastType='mouse';
   var cal=document.getElementById('cal');
+  (function(){
+    var box=document.getElementById('screen');
+    SCREEN.forEach(function(t,i){
+      var q=document.createElement('div'); q.className='q';
+      var d=document.createElement('div'); d.className='t'; d.textContent=(i+1)+'. '+t; q.appendChild(d);
+      var c=document.createElement('div'); c.className='ch';
+      [['아니오','아니오'],['예','예']].forEach(function(o){
+        var l=document.createElement('label'), r=document.createElement('input');
+        r.type='radio'; r.name='sc'+i; r.value=o[0];
+        l.appendChild(r); l.appendChild(document.createTextNode(o[1])); c.appendChild(l);
+      });
+      q.appendChild(c); box.appendChild(q);
+    });
+  })();
   (function(){
     var left=0;
     document.getElementById('consentBody').innerHTML=CONSENT.map(function(r){
@@ -324,13 +360,16 @@ textarea{width:100%;font:inherit;font-size:.9rem;color:var(--ink);background:var
     var sid=document.getElementById('sid').value.trim(), dept=document.getElementById('dept').value.trim();
     var vid=document.getElementById('vid').checked;
     var em=document.getElementById('em').value.trim(), emOk=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em);
-    out.value=parts.length?('이름: '+(nm||'미입력')+' | 학번: '+(sid||'미입력')+' | 학과: '+(dept||'미입력')+' | 연락처: '+(ph||'미입력')+' | 이메일: '+(em||'미입력')+' | 만 19세 이상: '+(adult?'예':'아니오')+' | 규정 확인: '+(rules?'예':'아니오')+' | 가능한 일정 — '+parts.join(' | ')+' | 머리 감기: '+(w||'미선택')+' | 방문 1회 소요: '+durText(N)+' | 개인정보 수집·이용 동의: '+(agreed?'예':'아니오')+' | 영상 녹화 동의: '+(vid?'예':'아니오')):'';
-    var ready=done>0&&!!w&&shortN===0&&agreed&&vid&&!!nm&&!!sid&&!!dept&&ph.replace(/\D/g,'').length>=9&&emOk&&adult&&rules;
+    var scA=SCREEN.map(function(_,i){ var r=document.querySelector('input[name=sc'+i+']:checked'); return r?r.value:'' });
+    var scAll=scA.every(function(v){return v}), scYes=scA.some(function(v){return v==='예'}), scOk=scAll&&!scYes;
+    var sw=document.getElementById('scWarn'); if(sw) sw.hidden=!scYes;
+    out.value=parts.length?('이름: '+(nm||'미입력')+' | 학번: '+(sid||'미입력')+' | 학과: '+(dept||'미입력')+' | 연락처: '+(ph||'미입력')+' | 이메일: '+(em||'미입력')+' | 만 19세 이상: '+(adult?'예':'아니오')+' | 규정 확인: '+(rules?'예':'아니오')+' | 가능한 일정 — '+parts.join(' | ')+' | 머리 감기: '+(w||'미선택')+' | 방문 1회 소요: '+durText(N)+' | 개인정보 수집·이용 동의: '+(agreed?'예':'아니오')+' | 영상 녹화 동의: '+(vid?'예':'아니오')+' | 참가 조건 확인: '+(scOk?'해당 없음':'미확인')):'';
+    var ready=done>0&&!!w&&shortN===0&&agreed&&vid&&!!nm&&!!sid&&!!dept&&ph.replace(/\D/g,'').length>=9&&emOk&&adult&&scOk&&rules;
     btn.disabled=!ready; setGo(ready,out.value);
     var sb=document.getElementById('submit');
     if(sb&&SCRIPT_URL){ sb.hidden=false; sb.disabled=!ready||sent; if(sent) sb.textContent='신청이 접수되었습니다' }
     msg.className='small '+(items.length&&!ready&&!(agreed===false&&done>0&&w&&!shortN&&false)?'warn':'mut');
-    msg.textContent=!items.length?'가능한 시간을 칠해 주세요.':!w?'머리를 감고 가실지 먼저 골라 주세요.':!agreed?'개인정보 수집·이용에 동의해야 신청할 수 있습니다.':!vid?'영상 녹화에 동의해야 신청할 수 있습니다.':(!nm||!sid||!dept||ph.replace(/\D/g,'').length<9||!emOk)?'이름, 학번, 학과, 연락처, 이메일을 모두 올바르게 입력해 주세요.':!adult?'만 19세 이상이어야 참여할 수 있습니다.':!rules?'참가비와 중도 하차 규정을 확인해 주세요.':shortN?'방문 한 번('+durText(N)+')보다 짧은 시간대가 '+shortN+'개 있습니다(빨간색). 늘리거나 지워 주세요.':!done?'월수금 또는 화목토 중 한 묶음은 세 날 모두 칠해야 합니다.':(partial.length?'미완성 묶음('+partial.join(', ')+')은 신청에 포함되지만 배정되지 않을 수 있습니다. ':'')+(SCRIPT_URL?'‘신청 보내기’를 누르면 바로 접수됩니다.':'');
+    msg.textContent=!items.length?'가능한 시간을 칠해 주세요.':!w?'머리를 감고 가실지 먼저 골라 주세요.':!agreed?'개인정보 수집·이용에 동의해야 신청할 수 있습니다.':!vid?'영상 녹화에 동의해야 신청할 수 있습니다.':(!nm||!sid||!dept||ph.replace(/\D/g,'').length<9||!emOk)?'이름, 학번, 학과, 연락처, 이메일을 모두 올바르게 입력해 주세요.':!adult?'만 19세 이상이어야 참여할 수 있습니다.':scYes?'해당하는 항목이 있어 이번 실험에는 참여하실 수 없습니다.':!scAll?'참가 조건 확인의 모든 항목에 답해 주세요.':!rules?'참가비와 중도 하차 규정을 확인해 주세요.':shortN?'방문 한 번('+durText(N)+')보다 짧은 시간대가 '+shortN+'개 있습니다(빨간색). 늘리거나 지워 주세요.':!done?'월수금 또는 화목토 중 한 묶음은 세 날 모두 칠해야 합니다.':(partial.length?'미완성 묶음('+partial.join(', ')+')은 신청에 포함되지만 배정되지 않을 수 있습니다. ':'')+(SCRIPT_URL?'‘신청 보내기’를 누르면 바로 접수됩니다.':'');
   }
   var sent=false;
   (function(){
@@ -456,7 +495,7 @@ textarea{width:100%;font:inherit;font-size:.9rem;color:var(--ink);background:var
       merge(); render();
     }
   });
-  document.addEventListener('change',function(e){ if(e.target.name==='wash'){ items.forEach(fit); merge(); render() } else if(e.target.id==='agree'||e.target.id==='vid'||e.target.id==='adult'||e.target.id==='rules'){ summarize() } });
+  document.addEventListener('change',function(e){ if(e.target.name==='wash'){ items.forEach(fit); merge(); render() } else if((e.target.name||'').indexOf('sc')===0){ summarize() } else if(e.target.id==='agree'||e.target.id==='vid'||e.target.id==='adult'||e.target.id==='rules'){ summarize() } });
   // phone: hyphens inserted automatically while typing (010-1234-5678; a 10-digit number not starting with 010 -> 011-123-4567)
   function fmtPhone(v,del){
     var d=v.replace(/\D/g,'').slice(0,11);
@@ -480,7 +519,7 @@ textarea{width:100%;font:inherit;font-size:.9rem;color:var(--ink);background:var
     clearTimeout(resetT); resetLabel();
     items=[]; drag=null;
     var r=document.querySelector('input[name="wash"]:checked'); if(r) r.checked=false;
-    document.getElementById('agree').checked=false; document.getElementById('vid').checked=false; document.getElementById('adult').checked=false; document.getElementById('rules').checked=false;
+    document.querySelectorAll('#screen input').forEach(function(x){x.checked=false}); document.getElementById('agree').checked=false; document.getElementById('vid').checked=false; document.getElementById('adult').checked=false; document.getElementById('rules').checked=false;
     render();
   });
   document.getElementById('copy').addEventListener('click',function(){
