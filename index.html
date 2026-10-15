@@ -340,10 +340,17 @@ textarea{width:100%;font:inherit;font-size:.9rem;color:var(--ink);background:var
       fetch(SCRIPT_URL+'?action=lookup&sid='+encodeURIComponent(sid)+'&phone='+encodeURIComponent(ph)).then(function(r){return r.json()}).then(function(d){
         if(!d.found){ out.textContent='일치하는 신청 내역이 없습니다. 학번과 연락처를 확인해 주세요.'; return }
         var st=d.status==='대기'?'검토 중':d.status;
+        var sch=String(d.schedule||''), k=sch.indexOf('가능한 일정 — ');
+        if(k>=0) sch=sch.slice(k+8);
+        var e2=sch.indexOf(' | 머리 감기'); if(e2>=0) sch=sch.slice(0,e2);
+        var sh=sch.split(' | ').map(function(g){
+          var c=g.indexOf(': '), head=c>=0?g.slice(0,c):'', days=(c>=0?g.slice(c+2):g).split(' / ');
+          return '<div style="margin-bottom:6px"><b>'+esc(head)+'</b><br>'+days.map(esc).join('<br>')+'</div>';
+        }).join('');
         out.innerHTML='<dl style="display:grid;grid-template-columns:auto 1fr;gap:6px 12px;margin:0">'
           +'<dt class="mut">이름</dt><dd style="margin:0">'+esc(d.name)+'</dd>'
           +'<dt class="mut">접수 시각</dt><dd style="margin:0">'+esc(d.submitted)+'</dd>'
-          +'<dt class="mut">가능한 일정</dt><dd style="margin:0">'+esc(d.schedule)+'</dd>'
+          +'<dt class="mut">가능한 일정</dt><dd style="margin:0">'+sh+'</dd>'
           +'<dt class="mut">머리 감기</dt><dd style="margin:0">'+esc(d.wash)+'</dd>'
           +'<dt class="mut">상태</dt><dd style="margin:0"><b>'+esc(st)+'</b></dd></dl>';
       }).catch(function(){ out.textContent='확인하지 못했습니다. 잠시 뒤 다시 시도해 주세요.' });
