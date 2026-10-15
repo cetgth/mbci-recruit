@@ -341,7 +341,7 @@ textarea{width:100%;font:inherit;font-size:.9rem;color:var(--ink);background:var
         if(!d.found){ out.textContent='일치하는 신청 내역이 없습니다. 학번과 연락처를 확인해 주세요.'; return }
         var st=d.status==='대기'?'검토 중':d.status;
         var sch=String(d.schedule||''), k=sch.indexOf('가능한 일정 — ');
-        if(k>=0) sch=sch.slice(k+8);
+        if(k>=0) sch=sch.slice(k+9);
         var e2=sch.indexOf(' | 머리 감기'); if(e2>=0) sch=sch.slice(0,e2);
         var sh=sch.split(' | ').map(function(g){
           var c=g.indexOf(': '), head=c>=0?g.slice(0,c):'', days=(c>=0?g.slice(c+2):g).split(' / ');
