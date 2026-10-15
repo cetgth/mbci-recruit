@@ -396,15 +396,16 @@ textarea{width:100%;font:inherit;font-size:.9rem;color:var(--ink);background:var
   });
   document.addEventListener('change',function(e){ if(e.target.name==='wash'){ items.forEach(fit); merge(); render() } else if(e.target.id==='agree'||e.target.id==='vid'||e.target.id==='adult'||e.target.id==='rules'){ summarize() } });
   // phone: hyphens inserted automatically while typing (010-1234-5678; a 10-digit number not starting with 010 -> 011-123-4567)
-  function fmtPhone(v){
+  function fmtPhone(v,del){
     var d=v.replace(/\D/g,'').slice(0,11);
-    if(d.length<4) return d;
+    if(d.length<3||(d.length===3&&del)) return d;
+    if(d.length===3) return d+'-';
     if(d.length<8) return d.slice(0,3)+'-'+d.slice(3);
     if(d.length===10&&d.slice(0,3)!=='010') return d.slice(0,3)+'-'+d.slice(3,6)+'-'+d.slice(6);
     return d.slice(0,3)+'-'+d.slice(3,7)+'-'+d.slice(7);
   }
   document.addEventListener('input',function(e){
-    if(e.target.id==='ph'){ var el=e.target, f=fmtPhone(el.value); if(el.value!==f) el.value=f; }
+    if(e.target.id==='ph'){ var el=e.target, f=fmtPhone(el.value,/^delete/.test(e.inputType||'')); if(el.value!==f) el.value=f; }
     if(e.target.id==='nm'||e.target.id==='ph'||e.target.id==='sid'||e.target.id==='dept') summarize();
   });
   var resetBtn=document.getElementById('reset'), resetT=0;
