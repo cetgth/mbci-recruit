@@ -132,6 +132,7 @@ textarea{width:100%;font:inherit;font-size:.9rem;color:var(--ink);background:var
       <label class="fld">연락처 (휴대폰)<input type="tel" id="ph" inputmode="numeric" autocomplete="tel" maxlength="13" placeholder="010-0000-0000"></label>
       <label class="fld">학번<input type="text" id="sid" inputmode="numeric" autocomplete="off" maxlength="20"></label>
       <label class="fld">학과<input type="text" id="dept" autocomplete="off" maxlength="40"></label>
+      <label class="fld">이메일<input type="email" id="em" autocomplete="email" maxlength="80" placeholder="name@unist.ac.kr"></label>
     </div>
     <label class="agree"><input type="checkbox" id="adult"><span>만 19세 이상입니다.</span></label>
   </section>
@@ -203,8 +204,8 @@ textarea{width:100%;font:inherit;font-size:.9rem;color:var(--ink);background:var
   var DOW=['월','화','수','목','금','토'];
   /* consent text: fill every [bracket] before publishing the link. Items left in brackets are shown in red. */
   var CONSENT=[
-    ['수집·이용 목적','실험 참가자 모집, 참가 자격 확인, 방문 일정 조율 및 연락, 참가비 지급'],
-    ['수집 항목','이름, 학번, 학과, 연락처, 가능한 일정, 머리 감기 선택. 참가비 지급에 필요한 계좌와 신고 정보는 첫 방문 시작 전에 현장에서 별도로 받습니다'],
+    ['수집·이용 목적','실험 참가자 모집, 참가 자격 확인, 방문 일정 조율 및 연락(확정 안내와 방문 전날 안내 메일 발송 포함), 참가비 지급'],
+    ['수집 항목','이름, 학번, 학과, 연락처, 이메일, 가능한 일정, 머리 감기 선택. 참가비 지급에 필요한 계좌와 신고 정보는 첫 방문 시작 전에 현장에서 별도로 받습니다'],
     ['영상 녹화','실험 중 얼굴과 상체를 영상으로 녹화합니다. 용도는 근육 신호와 움직임 확인, 자료 분석에 한정하며, 연구자 외에는 열람할 수 없습니다'],
     ['영상 보관·파기','자료 분석이 끝날 때까지 보관하고, 그 뒤에는 지체 없이 파기합니다. 논문·발표 등에는 얼굴이 식별되는 영상을 사용하지 않습니다'],
     ['보유·이용 기간','참가비 지급과 연구 자료 수집이 끝날 때까지 보유하며, 그 뒤에는 지체 없이 파기합니다'],
@@ -322,13 +323,14 @@ textarea{width:100%;font:inherit;font-size:.9rem;color:var(--ink);background:var
     var adult=document.getElementById('adult').checked, rules=document.getElementById('rules').checked;
     var sid=document.getElementById('sid').value.trim(), dept=document.getElementById('dept').value.trim();
     var vid=document.getElementById('vid').checked;
-    out.value=parts.length?('이름: '+(nm||'미입력')+' | 학번: '+(sid||'미입력')+' | 학과: '+(dept||'미입력')+' | 연락처: '+(ph||'미입력')+' | 만 19세 이상: '+(adult?'예':'아니오')+' | 규정 확인: '+(rules?'예':'아니오')+' | 가능한 일정 — '+parts.join(' | ')+' | 머리 감기: '+(w||'미선택')+' | 방문 1회 소요: '+durText(N)+' | 개인정보 수집·이용 동의: '+(agreed?'예':'아니오')+' | 영상 녹화 동의: '+(vid?'예':'아니오')):'';
-    var ready=done>0&&!!w&&shortN===0&&agreed&&vid&&!!nm&&!!sid&&!!dept&&ph.replace(/\D/g,'').length>=9&&adult&&rules;
+    var em=document.getElementById('em').value.trim(), emOk=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em);
+    out.value=parts.length?('이름: '+(nm||'미입력')+' | 학번: '+(sid||'미입력')+' | 학과: '+(dept||'미입력')+' | 연락처: '+(ph||'미입력')+' | 이메일: '+(em||'미입력')+' | 만 19세 이상: '+(adult?'예':'아니오')+' | 규정 확인: '+(rules?'예':'아니오')+' | 가능한 일정 — '+parts.join(' | ')+' | 머리 감기: '+(w||'미선택')+' | 방문 1회 소요: '+durText(N)+' | 개인정보 수집·이용 동의: '+(agreed?'예':'아니오')+' | 영상 녹화 동의: '+(vid?'예':'아니오')):'';
+    var ready=done>0&&!!w&&shortN===0&&agreed&&vid&&!!nm&&!!sid&&!!dept&&ph.replace(/\D/g,'').length>=9&&emOk&&adult&&rules;
     btn.disabled=!ready; setGo(ready,out.value);
     var sb=document.getElementById('submit');
     if(sb&&SCRIPT_URL){ sb.hidden=false; sb.disabled=!ready||sent; if(sent) sb.textContent='신청이 접수되었습니다' }
     msg.className='small '+(items.length&&!ready&&!(agreed===false&&done>0&&w&&!shortN&&false)?'warn':'mut');
-    msg.textContent=!items.length?'가능한 시간을 칠해 주세요.':!w?'머리를 감고 가실지 먼저 골라 주세요.':!agreed?'개인정보 수집·이용에 동의해야 신청할 수 있습니다.':!vid?'영상 녹화에 동의해야 신청할 수 있습니다.':(!nm||!sid||!dept||ph.replace(/\D/g,'').length<9)?'이름, 학번, 학과, 연락처를 모두 입력해 주세요.':!adult?'만 19세 이상이어야 참여할 수 있습니다.':!rules?'참가비와 중도 하차 규정을 확인해 주세요.':shortN?'방문 한 번('+durText(N)+')보다 짧은 시간대가 '+shortN+'개 있습니다(빨간색). 늘리거나 지워 주세요.':!done?'월수금 또는 화목토 중 한 묶음은 세 날 모두 칠해야 합니다.':(partial.length?'미완성 묶음('+partial.join(', ')+')은 신청에 포함되지만 배정되지 않을 수 있습니다. ':'')+(SCRIPT_URL?'‘신청 보내기’를 누르면 바로 접수됩니다.':'');
+    msg.textContent=!items.length?'가능한 시간을 칠해 주세요.':!w?'머리를 감고 가실지 먼저 골라 주세요.':!agreed?'개인정보 수집·이용에 동의해야 신청할 수 있습니다.':!vid?'영상 녹화에 동의해야 신청할 수 있습니다.':(!nm||!sid||!dept||ph.replace(/\D/g,'').length<9||!emOk)?'이름, 학번, 학과, 연락처, 이메일을 모두 올바르게 입력해 주세요.':!adult?'만 19세 이상이어야 참여할 수 있습니다.':!rules?'참가비와 중도 하차 규정을 확인해 주세요.':shortN?'방문 한 번('+durText(N)+')보다 짧은 시간대가 '+shortN+'개 있습니다(빨간색). 늘리거나 지워 주세요.':!done?'월수금 또는 화목토 중 한 묶음은 세 날 모두 칠해야 합니다.':(partial.length?'미완성 묶음('+partial.join(', ')+')은 신청에 포함되지만 배정되지 않을 수 있습니다. ':'')+(SCRIPT_URL?'‘신청 보내기’를 누르면 바로 접수됩니다.':'');
   }
   var sent=false;
   (function(){
@@ -360,7 +362,7 @@ textarea{width:100%;font:inherit;font-size:.9rem;color:var(--ink);background:var
   function payload(){
     var g=function(i){ return document.getElementById(i) };
     var wins=items.map(function(x){ return {week:x.w,c:x.c,s:hhmm(x.s),e:hhmm(x.e)} });
-    return {name:g('nm').value.trim(),sid:g('sid').value.trim(),dept:g('dept').value.trim(),phone:g('ph').value.trim(),
+    return {name:g('nm').value.trim(),sid:g('sid').value.trim(),dept:g('dept').value.trim(),phone:g('ph').value.trim(),email:g('em').value.trim(),
       wash:wash(),visitMin:need(),schedule:g('out').value,windows:wins,
       consent:g('agree').checked,video:g('vid').checked,rules:g('rules').checked,adult:g('adult').checked};
   }
@@ -466,7 +468,7 @@ textarea{width:100%;font:inherit;font-size:.9rem;color:var(--ink);background:var
   }
   document.addEventListener('input',function(e){
     if(e.target.id==='ph'||e.target.id==='lkph'){ var el=e.target, f=fmtPhone(el.value,/^delete/.test(e.inputType||'')); if(el.value!==f) el.value=f; }
-    if(e.target.id==='nm'||e.target.id==='ph'||e.target.id==='sid'||e.target.id==='dept') summarize();
+    if(e.target.id==='nm'||e.target.id==='ph'||e.target.id==='sid'||e.target.id==='dept'||e.target.id==='em') summarize();
   });
   var resetBtn=document.getElementById('reset'), resetT=0;
   function resetLabel(){ resetBtn.textContent='초기화'; resetBtn.dataset.armed=''; }
