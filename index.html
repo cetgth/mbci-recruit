@@ -29,6 +29,7 @@
 }
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:15px;line-height:1.55;padding-inline:16px;padding-block:20px 48px}
+[hidden]{display:none!important}
 .wrap{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:16px;min-width:0}
 h1{font-size:1.35rem;margin:0;font-weight:600;text-wrap:balance}
 h2{font-size:1rem;margin:0 0 8px;font-weight:600}
@@ -87,7 +88,7 @@ textarea{width:100%;font:inherit;font-size:.9rem;color:var(--ink);background:var
 <div class="wrap">
   <header>
     <h1>참가 일정 선택</h1>
-    <p class="mut small" style="margin-top:4px">요일마다 가능한 시간을 달력에 칠하면 신청서로 이어집니다.</p>
+    <p class="mut small" style="margin-top:4px">요일마다 가능한 시간을 달력에 칠하고, 아래 ‘신청 보내기’를 누르면 신청이 끝납니다.</p>
   </header>
 
   <section class="panel">
@@ -147,7 +148,6 @@ textarea{width:100%;font:inherit;font-size:.9rem;color:var(--ink);background:var
   </section>
 
   <section class="panel">
-    <h2>3. 신청하기</h2>
     <textarea id="out" readonly hidden style="display:none"></textarea>
     <div style="display:flex;gap:10px;align-items:center;margin-top:8px;flex-wrap:wrap">
       <button class="b" id="submit" disabled hidden>신청 보내기</button>
@@ -314,7 +314,7 @@ textarea{width:100%;font:inherit;font-size:.9rem;color:var(--ink);background:var
     var sb=document.getElementById('submit');
     if(sb&&SCRIPT_URL){ sb.hidden=false; sb.disabled=!ready||sent; if(sent) sb.textContent='신청이 접수되었습니다' }
     msg.className='small '+(items.length&&!ready&&!(agreed===false&&done>0&&w&&!shortN&&false)?'warn':'mut');
-    msg.textContent=!items.length?'가능한 시간을 칠하면 신청서로 이동할 수 있습니다.':!w?'머리를 감고 가실지 먼저 골라 주세요.':!agreed?'개인정보 수집·이용에 동의해야 신청할 수 있습니다.':!vid?'영상 녹화에 동의해야 신청할 수 있습니다.':(!nm||!sid||!dept||ph.replace(/\D/g,'').length<9)?'이름, 학번, 학과, 연락처를 모두 입력해 주세요.':!adult?'만 19세 이상이어야 참여할 수 있습니다.':!rules?'참가비와 중도 하차 규정을 확인해 주세요.':shortN?'방문 한 번('+durText(N)+')보다 짧은 시간대가 '+shortN+'개 있습니다(빨간색). 늘리거나 지워 주세요.':!done?'월수금 또는 화목토 중 한 묶음은 세 날 모두 칠해야 합니다.':(partial.length?'미완성 묶음('+partial.join(', ')+')은 신청에 포함되지만 배정되지 않을 수 있습니다. ':'')+(SCRIPT_URL?'‘신청 보내기’를 누르면 바로 접수됩니다.':FORM_URL?'‘신청서 열기’를 누르면 고른 일정이 미리 입력된 신청서가 열립니다.':'신청서 주소가 아직 연결되지 않았습니다. 선택 내용을 복사해 신청서의 ‘가능한 일정’ 칸에 붙여 넣어 주세요.');
+    msg.textContent=!items.length?'가능한 시간을 칠해 주세요.':!w?'머리를 감고 가실지 먼저 골라 주세요.':!agreed?'개인정보 수집·이용에 동의해야 신청할 수 있습니다.':!vid?'영상 녹화에 동의해야 신청할 수 있습니다.':(!nm||!sid||!dept||ph.replace(/\D/g,'').length<9)?'이름, 학번, 학과, 연락처를 모두 입력해 주세요.':!adult?'만 19세 이상이어야 참여할 수 있습니다.':!rules?'참가비와 중도 하차 규정을 확인해 주세요.':shortN?'방문 한 번('+durText(N)+')보다 짧은 시간대가 '+shortN+'개 있습니다(빨간색). 늘리거나 지워 주세요.':!done?'월수금 또는 화목토 중 한 묶음은 세 날 모두 칠해야 합니다.':(partial.length?'미완성 묶음('+partial.join(', ')+')은 신청에 포함되지만 배정되지 않을 수 있습니다. ':'')+(SCRIPT_URL?'‘신청 보내기’를 누르면 바로 접수됩니다.':'');
   }
   var sent=false;
   function payload(){
