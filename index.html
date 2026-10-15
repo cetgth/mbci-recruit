@@ -147,12 +147,12 @@ textarea{width:100%;font:inherit;font-size:.9rem;color:var(--ink);background:var
   </section>
 
   <section class="panel">
-    <h2>3. 신청서로 이동하세요</h2>
-    <textarea id="out" readonly placeholder="시간을 칠하면 여기에 선택 내용이 정리됩니다."></textarea>
+    <h2>3. 신청하기</h2>
+    <textarea id="out" readonly hidden style="display:none"></textarea>
     <div style="display:flex;gap:10px;align-items:center;margin-top:8px;flex-wrap:wrap">
       <button class="b" id="submit" disabled hidden>신청 보내기</button>
-      <a class="b" id="go" href="#" target="_blank" rel="noopener" aria-disabled="true" style="text-decoration:none">신청서 열기</a>
-      <button class="btn" id="copy" disabled>선택 내용 복사</button>
+      <a class="b" id="go" href="#" target="_blank" rel="noopener" aria-disabled="true" hidden style="display:none;text-decoration:none">신청서 열기</a>
+      <button class="btn" id="copy" disabled hidden style="display:none">선택 내용 복사</button>
     </div>
     <p class="small mut" id="msg" style="margin-top:8px"></p>
   </section>
