@@ -158,6 +158,19 @@ textarea{width:100%;font:inherit;font-size:.9rem;color:var(--ink);background:var
   </section>
 </div>
 
+<div class="wrap" id="done" hidden>
+  <section class="panel" style="margin-top:24px">
+    <h1 style="font-size:1.4rem;margin-bottom:10px">신청이 접수되었습니다</h1>
+    <p id="doneWho" style="margin-bottom:10px"></p>
+    <dl style="display:grid;grid-template-columns:auto 1fr;gap:6px 12px;margin:0 0 14px;font-size:.92rem">
+      <dt class="mut">다음 단계</dt><dd style="margin:0">신청하신 일정을 검토한 뒤, 입력하신 연락처로 확정 여부와 방문 일정을 알려 드립니다.</dd>
+      <dt class="mut">준비</dt><dd style="margin:0">첫 방문 전에 참가비 지급에 필요한 계좌와 신고 정보를 현장에서 받습니다.</dd>
+      <dt class="mut">문의</dt><dd style="margin:0">cetgth@unist.ac.kr</dd>
+    </dl>
+    <p class="small mut">이 창은 닫으셔도 됩니다. 같은 내용을 다시 신청하실 필요가 없습니다.</p>
+  </section>
+</div>
+
 <script>
 (function(){
   /* edit these lines for the recruiting period */
@@ -315,7 +328,14 @@ textarea{width:100%;font:inherit;font-size:.9rem;color:var(--ink);background:var
     if(e.target.id!=='submit'||!SCRIPT_URL||sent) return;
     var sb=e.target; sb.disabled=true; sb.textContent='보내는 중…';
     fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload())})
-      .then(function(){ sent=true; summarize(); var m=document.getElementById('msg'); m.className='small'; m.textContent='신청이 접수되었습니다. 검토 후 연락드리겠습니다.' })
+      .then(function(){
+        sent=true;
+        var nm=document.getElementById('nm').value.trim();
+        document.getElementById('doneWho').textContent=nm+'님, 참가 신청해 주셔서 감사합니다.';
+        document.querySelector('.wrap').hidden=true;
+        document.getElementById('done').hidden=false;
+        window.scrollTo(0,0);
+      })
       .catch(function(){ sb.disabled=false; sb.textContent='신청 보내기'; notice('전송에 실패했습니다. 인터넷 연결을 확인하고 다시 눌러 주세요.') });
   });
   if(SCRIPT_URL){ fetch(SCRIPT_URL+'?action=taken').then(function(r){return r.json()}).then(function(a){ if(Array.isArray(a)){ TAKEN=a; items.forEach(fit); render() } }).catch(function(){}) }
