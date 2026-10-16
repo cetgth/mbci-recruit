@@ -1,3 +1,7 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>참가 일정 선택</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
@@ -58,6 +62,7 @@ p{margin:0}
 .vb .in{padding:3px 3px;pointer-events:none}
 .vb .h{position:absolute;left:0;right:0;height:10px;cursor:ns-resize;touch-action:none}
 .vb .h.t{top:0} .vb .h.bt{bottom:0}
+@media (pointer:coarse){ .vb .h{height:20px} }
 .vb .h::after{content:"";position:absolute;left:50%;top:50%;width:18px;height:3px;margin:-1.5px 0 0 -9px;border-radius:2px;background:currentColor;opacity:.6}
 .vb .x{position:absolute;right:1px;top:11px;width:20px;height:20px;border:0;border-radius:4px;background:rgba(0,0,0,.2);color:inherit;font-size:.8rem;line-height:1;cursor:pointer;padding:0}
 .closed{position:absolute;left:0;right:0;z-index:2;cursor:not-allowed;color:var(--mut);font-size:.62rem;font-family:var(--mono);text-align:center;padding-top:3px;overflow:hidden;background:repeating-linear-gradient(135deg,var(--line) 0 5px,var(--soft) 5px 10px);opacity:.95}
@@ -160,7 +165,7 @@ textarea{width:100%;font:inherit;font-size:.9rem;color:var(--ink);background:var
 
   <section class="panel">
     <h2>2. 가능한 시간을 모두 칠하세요</h2>
-    <p class="small mut">가로는 요일, 세로는 시간입니다. 가능한 시간대의 시작 지점에서 끝 지점까지 아래로 <b>끌어서</b> 칠하세요(10분 단위). 한 번의 방문에 필요한 시간(150분, 머리를 감으면 180분)보다 짧게는 만들 수 없습니다. 처음 칠하면 월수금(또는 화목토) 세 날에 <b>한꺼번에</b> 같은 시간이 만들어지고, 그다음에는 날마다 따로 조정할 수 있습니다. 시간은 날마다 달라도 됩니다. 블록의 위아래 가장자리를 끌면 길이가, 가운데를 끌면 위치가 바뀌고, 블록 오른쪽의 × 를 누르면 지워집니다. 그냥 누르기만 하면 한 번의 방문 길이만큼 블록이 놓입니다. 가능한 시간이 여러 구간이면 여러 번 칠하세요.</p>
+    <p class="small mut">가로는 요일, 세로는 시간입니다. 가능한 시간대의 시작 지점에서 끝 지점까지 아래로 <b>끌어서</b> 칠하세요(10분 단위). 한 번의 방문에 필요한 시간(150분, 머리를 감으면 180분)보다 짧게는 만들 수 없습니다. 처음 칠하면 월수금(또는 화목토) 세 날에 <b>한꺼번에</b> 같은 시간이 만들어지고, 그다음에는 날마다 따로 조정할 수 있습니다. 시간은 날마다 달라도 됩니다. 블록의 위아래 가장자리를 끌면 길이가, 가운데를 끌면 위치가 바뀌고, 블록 오른쪽의 × 를 누르면 지워집니다. 그냥 누르기만 하면 한 번의 방문 길이만큼 블록이 놓입니다. 가능한 시간이 여러 구간이면 여러 번 칠하세요. <b>휴대폰에서는</b> 화면을 쓸면 스크롤되므로, 시작 시간을 한 번 누른 뒤 블록의 아래 가장자리를 끌어 늘려 주세요.</p>
     <div style="display:flex;justify-content:flex-end;margin-top:10px"><button type="button" class="btn" id="reset" disabled>초기화</button></div>
     <div id="cal"></div>
     <div class="legend"><span><span class="sw" style="background:var(--a)"></span>월 · 수 · 금</span><span><span class="sw" style="background:var(--b)"></span>화 · 목 · 토</span><span><span class="sw" style="background:repeating-linear-gradient(135deg,var(--line) 0 3px,var(--soft) 3px 6px)"></span>모집이 끝난 시간 (선택 불가)</span></div>
@@ -330,8 +335,9 @@ textarea{width:100%;font:inherit;font-size:.9rem;color:var(--ink);background:var
     cal.innerHTML=html;
     summarize();
   }
-  var noticeT=0;
-  function notice(t){ var m=document.getElementById('msg'); if(!m) return; m.className='small warn'; m.textContent=t; clearTimeout(noticeT); noticeT=setTimeout(summarize,3000) }
+  var noticeT=0, noticeUntil=0;
+  // a warning stays readable for 3 s: render() calls summarize() right after it, which would otherwise overwrite it at once
+  function notice(t){ var m=document.getElementById('msg'); if(!m) return; m.className='small warn'; m.textContent=t; noticeUntil=Date.now()+2900; clearTimeout(noticeT); noticeT=setTimeout(summarize,3000) }
   function summarize(){
     var parts=[], w=wash(), N=need(), shortN=0, done=0, partial=[];
     for(var wk=0;wk<WEEKS;wk++) ['A','B'].forEach(function(g){
@@ -360,6 +366,7 @@ textarea{width:100%;font:inherit;font-size:.9rem;color:var(--ink);background:var
     btn.disabled=!ready; setGo(ready,out.value);
     var sb=document.getElementById('submit');
     if(sb&&SCRIPT_URL){ sb.hidden=false; sb.disabled=!ready||sent; if(sent) sb.textContent='신청이 접수되었습니다' }
+    if(Date.now()<noticeUntil) return;                 // a fresh warning is on screen: leave the message line to it
     msg.className='small '+(items.length&&!ready&&!(agreed===false&&done>0&&w&&!shortN&&false)?'warn':'mut');
     msg.textContent=!items.length?'가능한 시간을 칠해 주세요.':!w?'머리를 감고 가실지 먼저 골라 주세요.':!agreed?'개인정보 수집·이용에 동의해야 신청할 수 있습니다.':!vid?'영상 녹화에 동의해야 신청할 수 있습니다.':(!nm||!sid||!dept||ph.replace(/\D/g,'').length<9||!emOk)?'이름, 학번, 학과, 연락처, 이메일을 모두 올바르게 입력해 주세요.':!adult?'만 19세 이상이어야 참여할 수 있습니다.':scYes?'해당하는 항목이 있어 이번 실험에는 참여하실 수 없습니다.':!scAll?'참가 조건 확인에 체크해 주세요.':!rules?'참가비와 중도 하차 규정을 확인해 주세요.':shortN?'방문 한 번('+durText(N)+')보다 짧은 시간대가 '+shortN+'개 있습니다(빨간색). 늘리거나 지워 주세요.':!done?'월수금 또는 화목토 중 한 묶음은 세 날 모두 칠해야 합니다.':(partial.length?'미완성 묶음('+partial.join(', ')+')은 신청에 포함되지만 배정되지 않을 수 있습니다. ':'')+(SCRIPT_URL?'‘신청 보내기’를 누르면 바로 접수됩니다.':'');
   }
@@ -465,7 +472,12 @@ textarea{width:100%;font:inherit;font-size:.9rem;color:var(--ink);background:var
     drag=null; merge(); render();
   }
   window.addEventListener('pointerup',finish);
-  window.addEventListener('pointercancel',finish);
+  window.addEventListener('pointercancel',function(){
+    // the browser took the gesture over (a finger swipe on the calendar scrolls the page): a block that was only being
+    // created is dropped instead of being left behind as a 10-minute stub; moves and resizes keep what they reached
+    if(drag&&drag.mode==='create'){ var gone=drag.ids; items=items.filter(function(x){return gone.indexOf(x.id)<0}); drag=null; render(); return }
+    finish();
+  });
   cal.addEventListener('click',function(e){
     var d=e.target.closest('[data-del]'); if(!d) return;
     var id=+d.dataset.del; items=items.filter(function(x){return x.id!==id}); render();
