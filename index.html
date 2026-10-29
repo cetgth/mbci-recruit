@@ -118,7 +118,7 @@ textarea{width:100%;font:inherit;font-size:.9rem;color:var(--ink);background:var
   <section class="panel">
     <h2>실험 안내</h2>
     <dl class="facts">
-      <dt>방문 횟수</dt><dd>총 3회 (한 주 안, 서로 다른 날)</dd>
+      <dt>방문 횟수</dt><dd>총 3회 (서로 다른 날)</dd>
       <dt>장소</dt><dd>104동 903B호 (카페 리차드와 같은 건물)</dd>
       <dt>한 번에</dt><dd>약 2시간 30분(머리 감을 시 약 3시간)</dd>
       <dt>참가비</dt><dd>총 12만 원 (회당 4만 원). 중도 하차 시 회당 2만 원</dd>
@@ -176,6 +176,7 @@ textarea{width:100%;font:inherit;font-size:.9rem;color:var(--ink);background:var
 
   <section class="panel">
     <h2>2. 가능한 시간을 모두 칠하세요</h2>
+    <p class="small" id="period"></p>
     <p class="small"><b>서로 다른 날 3일 이상</b> 칠해 주세요. 많이 칠할수록 일정 잡기가 쉽습니다.</p>
     <ul class="small mut" style="margin:6px 0 0;padding-left:18px;display:flex;flex-direction:column;gap:2px">
       <li>칠하기: 누르거나 아래로 끌기</li>
@@ -225,15 +226,15 @@ textarea{width:100%;font:inherit;font-size:.9rem;color:var(--ink);background:var
 <script>
 (function(){
   /* edit these lines for the recruiting period */
-  var START='2026-11-02';   // Monday of the first week shown
-  var WEEKS=1;              // how many weeks are shown
+  var EPOCH='2026-11-02';   // day 0 of every stored day number (c = days since this Monday). Never change it
+  var PSTART='2026-11-02', PEND='2026-11-08';   // recruiting period shown to applicants; the admin page overrides it (?action=period)
   var AX0='09:00';          // top of the time axis (09:00)
   var AX1='23:00';          // bottom of the time axis (23:00)
   var STEP=10;              // minutes per snap
   var DUR=150;              // one visit in minutes (up to 2 h 30)
   var WASH=30;              // extra minutes when the participant washes hair
   var PX=0.6;               // pixels per minute
-  var TAKEN=[];             // closed intervals, e.g. [{"c":0,"s":"10:00","e":"12:30"}] ; c = 0 Mon .. 6 Sun. Copy it from the admin page.
+  var TAKEN=[];             // closed intervals from the server, e.g. [{"c":0,"s":"10:00","e":"12:30"}] ; c = days since EPOCH
   var FORM_URL='';          // sign-up form link (Google Form: .../viewform). Empty = copy-and-paste mode
   var SCRIPT_URL='https://script.google.com/macros/s/AKfycbzldz3xryZpWzQ0GEWMz08DcO8KT3cEyMSm7CWbC8dtMQT5J8pjtst0UQPhbnn10hoS/exec';        // Apps Script web app (.../exec). When set, the page submits directly and loads closed intervals from it
   var FORM_ENTRY='';        // the form field that receives the schedule, e.g. entry.1234567890
@@ -270,8 +271,18 @@ textarea{width:100%;font:inherit;font-size:.9rem;color:var(--ink);background:var
   function durText(m){var h=Math.floor(m/60), r=m%60; return (h?h+'시간':'')+(h&&r?' ':'')+(r||!h?r+'분':'')}
   var T0=mins(AX0), T1=mins(AX1), SPAN=T1-T0, H=SPAN*PX;
   var today=new Date(); today=new Date(today.getFullYear(),today.getMonth(),today.getDate());
-  var start=parse(START);
-  var items=[];            // {id,w,c,s,e}  c = day column 0..6 (Mon..Sun)
+  var start, W0, WEEKS, pS, pE;   // first Monday shown, its week number since EPOCH, weeks shown, period first/last day
+  function setPeriod(a,b){
+    pS=parse(a); pE=parse(b); if(pE<pS) pE=pS;
+    start=addDays(pS,-((pS.getDay()+6)%7));
+    W0=Math.round((start-parse(EPOCH))/604800000);
+    WEEKS=Math.floor(Math.round((pE-start)/86400000)/7)+1;
+    var pe=document.getElementById('period');
+    if(pe) pe.innerHTML='모집 기간: <b>'+label(pS)+'('+DOW[(pS.getDay()+6)%7]+') ~ '+label(pE)+'('+DOW[(pE.getDay()+6)%7]+')</b>';
+  }
+  setPeriod(PSTART,PEND);
+  var items=[];            // {id,w,c,s,e}  w = week shown (0 = first), c = day column 0..6 (Mon..Sun)
+  function absDay(w,c){return (W0+w)*7+c}   // stored day number (days since EPOCH)
   var seq=1, drag=null, sel=null, lastType='mouse';
   var cal=document.getElementById('cal');
   (function(){
@@ -299,7 +310,7 @@ textarea{width:100%;font:inherit;font-size:.9rem;color:var(--ink);background:var
   function snap(m){return Math.round(m/STEP)*STEP}
   function clampT(m){return Math.max(T0,Math.min(T1,m))}
   function dayOf(w,c){return addDays(addDays(start,w*7),c)}
-  function dayOk(w,c){return dayOf(w,c)>=today}
+  function dayOk(w,c){var d=dayOf(w,c);return d>=today&&d>=pS&&d<=pE}
   function fit(b){                         // a window is never shorter than one visit
     var n=need(); if(b.e-b.s<n){
       var s0=b.s, e0=b.e; b.e=b.s+n; if(b.e>T1){ b.e=T1; b.s=T1-n }
@@ -307,7 +318,7 @@ textarea{width:100%;font:inherit;font-size:.9rem;color:var(--ink);background:var
     }
   }
   function clash(x){                      // does a window overlap a closed interval on its day?
-    return TAKEN.some(function(t){ return t.c===x.c&&mins(t.s)<x.e&&x.s<mins(t.e) });
+    return TAKEN.some(function(t){ return +t.c===absDay(x.w,x.c)&&mins(t.s)<x.e&&x.s<mins(t.e) });
   }
   function anyClash(){ return items.some(clash) }
   function settle(ids,s,n){                // put one visit-length block on all its days, nudging it out of closed intervals
@@ -346,7 +357,7 @@ textarea{width:100%;font:inherit;font-size:.9rem;color:var(--ink);background:var
             '<div class="h t" data-h="top"></div><div class="in">'+hhmm(x.s)+'<br><span class="tl">~</span>'+hhmm(x.e)+(x.e-x.s>=40?'<span class="du"><br>'+durText(x.e-x.s)+'</span>':'')+(short&&x.e-x.s>=70?'<br>짧음':'')+'</div>'+
             '<button type="button" class="x" data-del="'+x.id+'" aria-label="지우기">×</button><div class="h bt" data-h="bot"></div></div>';
         }).join('');
-        var shut=TAKEN.filter(function(t){return t.c===c}).map(function(t){
+        var shut=TAKEN.filter(function(t){return +t.c===absDay(w,c)}).map(function(t){
           return '<div class="closed" title="모집이 끝난 시간입니다" style="top:'+((mins(t.s)-T0)*PX)+'px;height:'+((mins(t.e)-mins(t.s))*PX)+'px">마감</div>';
         }).join('');
         html+='<div class="col'+(ok?'':' off')+'" data-w="'+w+'" data-c="'+c+'" '+(ok?'tabindex="0" ':'')+'aria-label="'+DOW[c]+'요일, 끌어서 가능한 시간 칠하기" style="height:'+H+'px;background-size:100% '+(60*PX)+'px">'+shut+inner+'</div>';
@@ -420,7 +431,7 @@ textarea{width:100%;font:inherit;font-size:.9rem;color:var(--ink);background:var
   })();
   function payload(){
     var g=function(i){ return document.getElementById(i) };
-    var wins=items.map(function(x){ return {week:x.w,c:x.c,s:hhmm(x.s),e:hhmm(x.e)} });
+    var wins=items.map(function(x){ return {week:W0+x.w,c:x.c,s:hhmm(x.s),e:hhmm(x.e)} });   // week counted from EPOCH, so the admin page reads week*7+c
     return {name:g('nm').value.trim(),sid:g('sid').value.trim(),dept:g('dept').value.trim(),phone:g('ph').value.trim(),email:g('em').value.trim(),
       wash:wash(),visitMin:need(),schedule:g('out').value,windows:wins,
       consent:g('agree').checked,video:g('vid').checked,rules:g('rules').checked,adult:g('adult').checked};
@@ -439,7 +450,16 @@ textarea{width:100%;font:inherit;font-size:.9rem;color:var(--ink);background:var
       })
       .catch(function(){ sb.disabled=false; sb.textContent='신청 보내기'; notice('전송에 실패했습니다. 인터넷 연결을 확인하고 다시 눌러 주세요.') });
   });
-  if(SCRIPT_URL){ fetch(SCRIPT_URL+'?action=taken').then(function(r){return r.json()}).then(function(a){ if(Array.isArray(a)){ TAKEN=a; items.forEach(fit); render() } }).catch(function(){}) }
+  if(SCRIPT_URL){
+    fetch(SCRIPT_URL+'?action=period').then(function(r){return r.json()}).then(function(p){
+      if(!p||Array.isArray(p)||!/^\d{4}-\d{2}-\d{2}$/.test(p.start||'')||!/^\d{4}-\d{2}-\d{2}$/.test(p.end||'')) return;   // an older server answers with the closed list: keep the default period
+      var keep=items.map(function(x){return {x:x,a:absDay(x.w,x.c)}});
+      setPeriod(p.start,p.end);
+      items=keep.map(function(k){k.x.w=Math.floor(k.a/7)-W0;return k.x}).filter(function(x){return x.w>=0&&x.w<WEEKS&&dayOk(x.w,x.c)});
+      render();
+    }).catch(function(){});
+    fetch(SCRIPT_URL+'?action=taken').then(function(r){return r.json()}).then(function(a){ if(Array.isArray(a)){ TAKEN=a; items.forEach(fit); render() } }).catch(function(){});
+  }
   function setGo(ready,text){
     var a=document.getElementById('go'), ok=ready&&FORM_URL;
     a.setAttribute('aria-disabled',ok?'false':'true');
