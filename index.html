@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
 /* layout: intro, wash choice, then ONE weekly time grid: days left to right (Mon-Sat), time top to bottom.
-   Drag on an empty spot to mark when you are free; the block appears on all 3 days of its group; drag its edges to adjust. */
+   Drag on an empty spot to mark when you are free (that day only); drag its edges to adjust. At least 3 different days are required (2026-10-29: no Mon-Wed-Fri / Tue-Thu-Sat groups, Sunday added). */
 :root{
   --bg:#f3f5f7; --panel:#ffffff; --ink:#1b2631; --mut:#5a6978; --line:#d8dfe6; --soft:#eaeff3;
   --a:#0b6b86; --a-ink:#ffffff; --a-soft:#d6ecf3;
@@ -45,13 +45,19 @@ p{margin:0}
 .sw{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-1px;margin-right:5px}
 .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:.82rem;color:var(--mut);margin-top:10px}
 .wk{font-size:.8rem;color:var(--mut);margin:14px 0 4px;font-family:var(--mono)}
-.tg{display:grid;grid-template-columns:34px repeat(6,minmax(0,1fr));column-gap:3px;user-select:none;-webkit-user-select:none}
+.tgw{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-inline:-4px;padding-inline:4px}
+.tg{display:grid;grid-template-columns:34px repeat(7,minmax(82px,1fr));column-gap:3px;user-select:none;-webkit-user-select:none}
 .hd{font-size:.76rem;text-align:center;padding-bottom:4px;color:var(--mut);line-height:1.25}
 .hd b{display:block;font-family:var(--mono);font-weight:500;font-size:.9rem}
 .hd.ga b{color:var(--a)} .hd.gb b{color:var(--b)}
-.axc{position:relative}
+.axc{position:sticky;left:0;z-index:4;background:var(--panel)}
+.tg>.corner{position:sticky;left:0;z-index:4;background:var(--panel)}
+.swipe{display:none}
+@media (max-width:560px){
+  body{padding-inline:8px} .panel{padding:12px 10px} .swipe{display:block}
+}
 .axc span{position:absolute;right:4px;transform:translateY(-50%);font-family:var(--mono);font-size:.66rem;color:var(--mut)}
-.col{position:relative;background-color:var(--soft);border-radius:6px;cursor:crosshair;touch-action:pan-y;overflow:hidden;
+.col{position:relative;background-color:var(--soft);border-radius:6px;cursor:crosshair;touch-action:pan-x pan-y;overflow:hidden;
   background-image:linear-gradient(to bottom,var(--line) 1px,transparent 1px)}
 .col.off{opacity:.4;cursor:not-allowed}
 .col:focus-visible,.vb:focus-visible,.b:focus-visible,.btn:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
@@ -84,8 +90,11 @@ textarea{width:100%;font:inherit;font-size:.9rem;color:var(--ink);background:var
 .fld input[type=text],.fld input[type=tel],.fld input[type=email]{font:inherit;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:9px 10px;min-height:42px}
 .fld input:focus-visible{outline:2px solid var(--ink);outline-offset:1px}
 .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
-.consent dl{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;margin:0;font-size:.88rem}
-.consent dt{color:var(--mut);white-space:nowrap}
+.consent dl{display:grid;grid-template-columns:1fr;gap:0;margin:0;font-size:.88rem}
+.consent dt{color:var(--ink);font-weight:600;margin-top:10px}
+.consent dt:first-child{margin-top:0}
+.consent dt::before{content:"•";margin-right:6px;color:var(--a)}
+.consent dd{padding-left:13px}
 .consent dd{margin:0}
 .ph{background:var(--bad-soft);color:var(--bad);border-radius:3px;padding:0 3px}
 .agree{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:6px;padding:10px 12px;margin-top:12px;cursor:pointer;background:var(--panel)}
@@ -94,22 +103,24 @@ textarea{width:100%;font:inherit;font-size:.9rem;color:var(--ink);background:var
 .wash{display:flex;flex-direction:column;gap:8px}
 .opt{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:6px;padding:10px 12px;cursor:pointer;background:var(--panel)}
 .opt input{width:18px;height:18px;accent-color:var(--a)}
+@media (max-width:560px){   /* phones: labels above their text so the text gets the full width (last, so it wins over the rules above) */
+  .facts{grid-template-columns:1fr;gap:0} .facts dt{margin-top:8px;font-size:.8rem} .facts dt:first-child{margin-top:0}
+}
 </style>
 
 <div class="wrap">
   <header>
     <h1>참가 일정 선택</h1>
-    <p class="mut small" style="margin-top:4px">요일마다 가능한 시간을 달력에 칠하고, 아래 ‘신청 보내기’를 누르면 신청이 끝납니다.</p>
+    <p class="mut small" style="margin-top:4px">가능한 시간을 달력에 칠하고 ‘신청 보내기’를 누르면 끝입니다.</p>
   </header>
 
   <section class="panel">
     <h2>실험 안내</h2>
     <dl class="facts">
-      <dt>방문 횟수</dt><dd>총 3회, 하루 걸러 옵니다. 시간은 매번 달라도 됩니다</dd>
+      <dt>방문 횟수</dt><dd>총 3회 (한 주 안, 서로 다른 날)</dd>
       <dt>장소</dt><dd>104동 903B호 (카페 리차드와 같은 건물)</dd>
       <dt>한 번에</dt><dd>약 2시간 30분(머리 감을 시 약 3시간)</dd>
-      <dt>참가비</dt><dd>3회를 모두 마치면 회당 4만 원(총 12만 원). <b>중도에 그만두면 이유와 관계없이 마친 방문 1회당 2만 원</b>만 지급됩니다. 일괄 지급합니다</dd>
-      <dt>묶음</dt><dd><span class="sw" style="background:var(--a)"></span>월 · 수 · 금 &nbsp; <span class="sw" style="background:var(--b)"></span>화 · 목 · 토</dd>
+      <dt>참가비</dt><dd>총 12만 원 (회당 4만 원). 중도 하차 시 회당 2만 원</dd>
     </dl>
   </section>
 
@@ -121,17 +132,17 @@ textarea{width:100%;font:inherit;font-size:.9rem;color:var(--ink);background:var
     </div>
     <div style="display:flex;gap:10px;align-items:center;margin-top:10px;flex-wrap:wrap">
       <button class="btn" id="lkgo" type="button">내역 확인</button>
-      <span class="small mut">신청하실 때 입력한 학번과 연락처를 넣어 주세요. 일정을 바꾸려면 이 페이지에서 다시 신청하시면 가장 최근 신청이 적용됩니다.</span>
+      <span class="small mut">일정을 바꾸려면 다시 신청하세요. 가장 최근 신청이 적용됩니다.</span>
     </div>
     <div id="lkout" class="small" style="margin-top:12px"></div>
   </details>
 
   <section class="panel consent">
     <h2>개인정보 수집·이용 동의</h2>
-    <p class="small mut" style="margin-bottom:10px">실험 참가 신청과 일정 조율을 위해 아래와 같이 개인정보를 수집·이용합니다. 내용을 읽고 동의해 주세요.</p>
+    <p class="small mut" style="margin-bottom:10px">신청과 일정 조율에 쓰입니다.</p>
     <dl id="consentBody"></dl>
     <label class="agree"><input type="checkbox" id="agree"><span><b>[필수]</b> 위 개인정보 수집·이용에 동의합니다.</span></label>
-    <label class="agree"><input type="checkbox" id="vid"><span><b>[필수]</b> 실험 중 영상 녹화(얼굴이 찍힐 수 있음)와 위 영상 이용 조건에 동의합니다.</span></label>
+    <label class="agree"><input type="checkbox" id="vid"><span><b>[필수]</b> 실험 중 영상 녹화(얼굴 포함)에 동의합니다.</span></label>
     <div class="todo" id="todo" hidden></div>
   </section>
 
@@ -149,32 +160,40 @@ textarea{width:100%;font:inherit;font-size:.9rem;color:var(--ink);background:var
 
   <section class="panel">
     <h2>참가 조건 확인</h2>
-    <p class="small mut" style="margin-bottom:6px">뇌파와 근전도를 측정하는 실험이라, 아래에 하나라도 해당하면 참여가 어렵습니다. 진단서 등은 요구하지 않습니다.</p>
+    <p class="small mut" style="margin-bottom:6px">하나라도 해당하면 참여가 어렵습니다.</p>
     <div id="screen"></div>
   </section>
 
   <section class="panel">
     <h2>1. 머리를 감고 가실지 먼저 고르세요</h2>
-    <p class="small" style="margin-bottom:10px">뇌파를 측정하기 위해 두피에 <b>전도성 젤</b>을 바릅니다. 그래서 실험이 끝난 뒤 <b>머리를 감을 수 있는 공간이 마련되어 있습니다.</b></p>
+    <p class="small" style="margin-bottom:10px">두피에 젤을 바르므로, 끝나고 <b>머리를 감고 갈 수 있습니다.</b></p>
     <div class="wash">
       <label class="opt"><input type="radio" name="wash" value="감음"> 감고 갑니다 <b>(방문이 30분 늘어납니다)</b></label>
       <label class="opt"><input type="radio" name="wash" value="안 감음"> 감지 않고 갑니다</label>
     </div>
-    <p class="small mut" style="margin-top:8px">이 선택에 따라 한 번의 방문에 필요한 시간이 정해지고, 달력에서 너무 짧은 시간대는 빨간색으로 표시됩니다.</p>
   </section>
 
   <section class="panel">
     <h2>2. 가능한 시간을 모두 칠하세요</h2>
-    <p class="small mut">가로는 요일, 세로는 시간입니다. 가능한 시간대의 시작 지점에서 끝 지점까지 아래로 <b>끌어서</b> 칠하세요(10분 단위). 한 번의 방문에 필요한 시간(150분, 머리를 감으면 180분)보다 짧게는 만들 수 없습니다. 처음 칠하면 월수금(또는 화목토) 세 날에 <b>한꺼번에</b> 같은 시간이 만들어지고, 그다음에는 날마다 따로 조정할 수 있습니다. 시간은 날마다 달라도 됩니다. 블록의 위아래 가장자리를 끌면 길이가, 가운데를 끌면 위치가 바뀌고, 블록 오른쪽의 × 를 누르면 지워집니다. 그냥 누르기만 하면 한 번의 방문 길이만큼 블록이 놓입니다. 가능한 시간이 여러 구간이면 여러 번 칠하세요. <b>휴대폰에서는</b> 화면을 쓸면 스크롤되므로, 시작 시간을 한 번 누른 뒤 블록의 아래 가장자리를 끌어 늘려 주세요.</p>
+    <p class="small"><b>서로 다른 날 3일 이상</b> 칠해 주세요. 많이 칠할수록 일정 잡기가 쉽습니다.</p>
+    <ul class="small mut" style="margin:6px 0 0;padding-left:18px;display:flex;flex-direction:column;gap:2px">
+      <li>칠하기: 누르거나 아래로 끌기</li>
+      <li>고치기: 가장자리 끌기 = 길이, 가운데 끌기 = 위치, × = 지우기</li>
+      <li>휴대폰: 한 번 누른 뒤 아래 가장자리를 끌어 늘리기</li>
+    </ul>
     <div style="display:flex;justify-content:flex-end;margin-top:10px"><button type="button" class="btn" id="reset" disabled>초기화</button></div>
     <div id="cal"></div>
-    <div class="legend"><span><span class="sw" style="background:var(--a)"></span>월 · 수 · 금</span><span><span class="sw" style="background:var(--b)"></span>화 · 목 · 토</span><span><span class="sw" style="background:repeating-linear-gradient(135deg,var(--line) 0 3px,var(--soft) 3px 6px)"></span>모집이 끝난 시간 (선택 불가)</span></div>
+    <div class="legend"><span><span class="sw" style="background:var(--a)"></span>선택한 시간</span><span><span class="sw" style="background:var(--soft);border:1px solid var(--line)"></span>가능한 시간</span><span><span class="sw" style="background:repeating-linear-gradient(135deg,var(--line) 0 3px,var(--soft) 3px 6px)"></span>마감</span></div>
     <p class="small mut" id="sumLine" style="margin-top:8px"></p>
   </section>
 
   <section class="panel">
     <h2>참가비와 중도 하차 규정</h2>
-    <p class="small">3회를 모두 마치면 회당 4만 원, 중도에 그만두면 <b>이유와 관계없이</b> 마친 방문 1회당 2만 원이 지급됩니다. 참가비는 마지막에 일괄 지급합니다. 지급에 필요한 <b>계좌와 신고 정보는 첫 방문 시작 전에 현장에서</b> 받으니, 계좌 정보(통장 사본 또는 계좌번호)를 준비해 오세요.</p>
+    <ul class="small" style="margin:0;padding-left:18px;display:flex;flex-direction:column;gap:2px">
+      <li>3회 모두 마치면 회당 4만 원 (총 12만 원)</li>
+      <li>중도 하차 시 <b>이유와 관계없이</b> 마친 회당 2만 원</li>
+      <li>마지막에 일괄 지급. 첫 방문 때 <b>계좌 정보</b>를 가져와 주세요</li>
+    </ul>
     <label class="agree"><input type="checkbox" id="rules"><span><b>[필수]</b> 위 규정을 확인했고 동의합니다.</span></label>
   </section>
 
@@ -212,20 +231,21 @@ textarea{width:100%;font:inherit;font-size:.9rem;color:var(--ink);background:var
   var STEP=10;              // minutes per snap
   var DUR=150;              // one visit in minutes (up to 2 h 30)
   var WASH=30;              // extra minutes when the participant washes hair
-  var PX=0.9;               // pixels per minute
-  var TAKEN=[];             // closed intervals, e.g. [{"c":0,"s":"10:00","e":"12:30"}] ; c = 0 Mon .. 5 Sat. Copy it from the admin page.
+  var PX=0.6;               // pixels per minute
+  var TAKEN=[];             // closed intervals, e.g. [{"c":0,"s":"10:00","e":"12:30"}] ; c = 0 Mon .. 6 Sun. Copy it from the admin page.
   var FORM_URL='';          // sign-up form link (Google Form: .../viewform). Empty = copy-and-paste mode
   var SCRIPT_URL='https://script.google.com/macros/s/AKfycbzldz3xryZpWzQ0GEWMz08DcO8KT3cEyMSm7CWbC8dtMQT5J8pjtst0UQPhbnn10hoS/exec';        // Apps Script web app (.../exec). When set, the page submits directly and loads closed intervals from it
   var FORM_ENTRY='';        // the form field that receives the schedule, e.g. entry.1234567890
-  var DOW=['월','화','수','목','금','토'];
+  var DOW=['월','화','수','목','금','토','일'];
+  var NDAY=7, MINDAYS=3;    // days shown per week (Mon..Sun); different days an applicant must mark
   var SCREEN=[
-    '평소 대화나 음악을 듣는 데 어려움이 있거나, 보청기·인공와우를 사용하거나, 이명이 심합니다.',
-    '안경 없이, 또는 콘택트렌즈를 끼고도 화면의 글자를 읽기 어렵습니다.',
-    '한국어 안내문을 읽고 지시에 따라 과제를 수행하기 어렵습니다.',
-    '뇌전증(간질)이나 발작을 겪은 적이 있습니다.',
-    '뇌 질환, 심한 두부 외상 또는 신경계 질환으로 진단·치료받은 적이 있습니다.',
-    '집중력이나 각성에 영향을 주는 약물(예: 정신과 약물, 수면제)을 현재 복용 중입니다.',
-    '두피에 상처·염증·피부질환이 있거나, 전도성 젤에 알레르기가 있습니다.'
+    '듣기가 어렵거나, 보청기·인공와우를 쓰거나, 이명이 심함',
+    '안경·렌즈를 껴도 화면 글자를 읽기 어려움',
+    '한국어 안내를 읽고 따르기 어려움',
+    '뇌전증(간질)이나 발작을 겪은 적 있음',
+    '뇌 질환, 심한 머리 부상, 신경계 질환으로 진단·치료받은 적 있음',
+    '집중·각성에 영향을 주는 약(정신과 약, 수면제 등)을 먹는 중',
+    '두피에 상처·염증·피부질환이 있거나 젤 알레르기가 있음'
   ];
   /* consent text: fill every [bracket] before publishing the link. Items left in brackets are shown in red. */
   var CONSENT=[
@@ -250,7 +270,7 @@ textarea{width:100%;font:inherit;font-size:.9rem;color:var(--ink);background:var
   var T0=mins(AX0), T1=mins(AX1), SPAN=T1-T0, H=SPAN*PX;
   var today=new Date(); today=new Date(today.getFullYear(),today.getMonth(),today.getDate());
   var start=parse(START);
-  var items=[];            // {id,w,c,s,e}  c = day column 0..5 (Mon..Sat), group = c%2
+  var items=[];            // {id,w,c,s,e}  c = day column 0..6 (Mon..Sun)
   var seq=1, drag=null, sel=null, lastType='mouse';
   var cal=document.getElementById('cal');
   (function(){
@@ -260,7 +280,7 @@ textarea{width:100%;font:inherit;font-size:.9rem;color:var(--ink);background:var
     box.appendChild(ul);
     var l=document.createElement('label'); l.className='agree';
     var c=document.createElement('input'); c.type='checkbox'; c.id='scok';
-    var sp=document.createElement('span'); sp.innerHTML='<b>[필수]</b> 위 항목에 해당하는 것이 없습니다.';
+    var sp=document.createElement('span'); sp.innerHTML='<b>[필수]</b> 해당하는 것이 없습니다.';
     l.appendChild(c); l.appendChild(sp); box.appendChild(l);
   })();
   (function(){
@@ -277,8 +297,8 @@ textarea{width:100%;font:inherit;font-size:.9rem;color:var(--ink);background:var
   function need(){return DUR+(wash()==='감음'?WASH:0)}
   function snap(m){return Math.round(m/STEP)*STEP}
   function clampT(m){return Math.max(T0,Math.min(T1,m))}
-  function groupDays(w,g){var o=g==='A'?[0,2,4]:[1,3,5]; return o.map(function(i){return addDays(addDays(start,w*7),i)})}
-  function groupOk(w,g){return groupDays(w,g).every(function(d){return d>=today})}
+  function dayOf(w,c){return addDays(addDays(start,w*7),c)}
+  function dayOk(w,c){return dayOf(w,c)>=today}
   function fit(b){                         // a window is never shorter than one visit
     var n=need(); if(b.e-b.s<n){
       var s0=b.s, e0=b.e; b.e=b.s+n; if(b.e>T1){ b.e=T1; b.s=T1-n }
@@ -301,7 +321,7 @@ textarea{width:100%;font:inherit;font-size:.9rem;color:var(--ink);background:var
   function byId(id){return items.filter(function(x){return x.id===id})[0]}
   function merge(){                       // union of overlapping or touching windows inside one day
     var out=[];
-    for(var w=0;w<WEEKS;w++) for(var c=0;c<6;c++){
+    for(var w=0;w<WEEKS;w++) for(var c=0;c<NDAY;c++){
       var l=items.filter(function(x){return x.w===w&&x.c===c}).sort(function(a,b){return a.s-b.s}), cur=null;
       l.forEach(function(x){ if(cur&&x.s<=cur.e){ cur.e=Math.max(cur.e,x.e) } else { cur=x; out.push(x) } });
     }
@@ -312,25 +332,25 @@ textarea{width:100%;font:inherit;font-size:.9rem;color:var(--ink);background:var
     var html='', N=need();
     for(var w=0;w<WEEKS;w++){
       var mon=addDays(start,w*7);
-      html+='<div class="wk">'+label(mon)+' 주</div><div class="tg">';
-      html+='<div></div>';
-      for(var i=0;i<6;i++){ html+='<div class="hd g'+(i%2?'b':'a')+'">'+DOW[i]+'<b>'+addDays(mon,i).getDate()+'</b></div>' }
+      html+='<div class="wk">'+label(mon)+' 주</div><p class="swipe small mut">← 옆으로 밀면 주말까지 보입니다 →</p><div class="tgw"><div class="tg">';
+      html+='<div class="corner"></div>';
+      for(var i=0;i<NDAY;i++){ html+='<div class="hd">'+DOW[i]+'<b>'+addDays(mon,i).getDate()+'</b></div>' }
       var ticks=''; for(var m=T0;m<=T1;m+=60){ ticks+='<span style="top:'+((m-T0)*PX)+'px">'+('0'+m/60).slice(-2)+'</span>' }
       html+='<div class="axc" style="height:'+H+'px">'+ticks+'</div>';
-      for(var c=0;c<6;c++){
-        var g=c%2===0?'A':'B', ok=groupOk(w,g);
+      for(var c=0;c<NDAY;c++){
+        var ok=dayOk(w,c);
         var inner=items.filter(function(x){return x.w===w&&x.c===c}).map(function(x){
           var short=(x.e-x.s)<N;
-          return '<div class="vb g'+g.toLowerCase()+(short?' short':'')+(drag&&drag.id===x.id?' dragging':'')+'" data-id="'+x.id+'" tabindex="0" role="group" aria-label="가능한 시간 '+hhmm(x.s)+'에서 '+hhmm(x.e)+'" style="top:'+((x.s-T0)*PX)+'px;height:'+Math.max(14,(x.e-x.s)*PX)+'px">'+
+          return '<div class="vb'+(short?' short':'')+(drag&&drag.id===x.id?' dragging':'')+'" data-id="'+x.id+'" tabindex="0" role="group" aria-label="선택한 시간 '+hhmm(x.s)+'에서 '+hhmm(x.e)+'" style="top:'+((x.s-T0)*PX)+'px;height:'+Math.max(14,(x.e-x.s)*PX)+'px">'+
             '<div class="h t" data-h="top"></div><div class="in">'+hhmm(x.s)+'<br>~'+hhmm(x.e)+(x.e-x.s>=40?'<br>'+durText(x.e-x.s):'')+(short&&x.e-x.s>=70?'<br>짧음':'')+'</div>'+
             '<button type="button" class="x" data-del="'+x.id+'" aria-label="지우기">×</button><div class="h bt" data-h="bot"></div></div>';
         }).join('');
         var shut=TAKEN.filter(function(t){return t.c===c}).map(function(t){
           return '<div class="closed" title="모집이 끝난 시간입니다" style="top:'+((mins(t.s)-T0)*PX)+'px;height:'+((mins(t.e)-mins(t.s))*PX)+'px">마감</div>';
         }).join('');
-        html+='<div class="col'+(ok?'':' off')+'" data-w="'+w+'" data-g="'+g+'" data-c="'+c+'" '+(ok?'tabindex="0" ':'')+'aria-label="'+DOW[c]+'요일, 끌어서 가능한 시간 칠하기" style="height:'+H+'px;background-size:100% '+(60*PX)+'px">'+shut+inner+'</div>';
+        html+='<div class="col'+(ok?'':' off')+'" data-w="'+w+'" data-c="'+c+'" '+(ok?'tabindex="0" ':'')+'aria-label="'+DOW[c]+'요일, 끌어서 가능한 시간 칠하기" style="height:'+H+'px;background-size:100% '+(60*PX)+'px">'+shut+inner+'</div>';
       }
-      html+='</div>';
+      html+='</div></div>';
     }
     cal.innerHTML=html;
     summarize();
@@ -339,22 +359,22 @@ textarea{width:100%;font:inherit;font-size:.9rem;color:var(--ink);background:var
   // a warning stays readable for 3 s: render() calls summarize() right after it, which would otherwise overwrite it at once
   function notice(t){ var m=document.getElementById('msg'); if(!m) return; m.className='small warn'; m.textContent=t; noticeUntil=Date.now()+2900; clearTimeout(noticeT); noticeT=setTimeout(summarize,3000) }
   function summarize(){
-    var parts=[], w=wash(), N=need(), shortN=0, done=0, partial=[];
-    for(var wk=0;wk<WEEKS;wk++) ['A','B'].forEach(function(g){
-      var cols=g==='A'?[0,2,4]:[1,3,5], days=groupDays(wk,g), seg=[], have=0;
-      cols.forEach(function(c,i){
+    var parts=[], w=wash(), N=need(), shortN=0, nDays=0;
+    for(var wk=0;wk<WEEKS;wk++){
+      var seg=[];
+      for(var c=0;c<NDAY;c++){
         var l=items.filter(function(x){return x.w===wk&&x.c===c}).sort(function(a,b){return a.s-b.s});
+        if(!l.length) continue;
         l.forEach(function(x){ if(x.e-x.s<N) shortN++ });
-        if(l.length) have++;
-        seg.push(label(days[i])+'('+DOW[c]+') '+(l.length?l.map(function(x){return hhmm(x.s)+'~'+hhmm(x.e)}).join(', '):'미선택'));
-      });
-      if(have===0) return;
-      if(have===3) done++; else partial.push((g==='A'?'월수금':'화목토')+' '+have+'/3일');
-      parts.push((g==='A'?'월수금: ':'화목토: ')+seg.join(' / '));
-    });
+        nDays++;
+        seg.push(label(dayOf(wk,c))+'('+DOW[c]+') '+l.map(function(x){return hhmm(x.s)+'~'+hhmm(x.e)}).join(', '));
+      }
+      if(seg.length) parts.push(seg.join(' / '));
+    }
+    var done=nDays>=MINDAYS;
     var out=document.getElementById('out'), btn=document.getElementById('copy'), msg=document.getElementById('msg'), sl=document.getElementById('sumLine');
     var rb=document.getElementById('reset'); if(rb) rb.disabled=!(items.length||w||document.getElementById('agree').checked);
-    sl.textContent=items.length?'가능한 시간대 '+items.length+'구간 · 완성된 묶음 '+done+'개'+(partial.length?' · 미완성: '+partial.join(', '):'')+' · 한 번의 방문에 필요한 시간 '+durText(N)+(w?'':' (머리 감기를 고르면 정해집니다)'):'아직 칠한 시간이 없습니다.';
+    sl.textContent=items.length?'선택한 시간대 '+items.length+'구간 · 칠한 날 '+nDays+'일'+(done?'':' (서로 다른 날 '+MINDAYS+'일 이상 필요)')+' · 한 번의 방문에 필요한 시간 '+durText(N)+(w?'':' (머리 감기를 고르면 정해집니다)'):'아직 칠한 시간이 없습니다.';
     var agreed=document.getElementById('agree').checked, nm=document.getElementById('nm').value.trim(), ph=document.getElementById('ph').value.trim();
     var adult=document.getElementById('adult').checked, rules=document.getElementById('rules').checked;
     var sid=document.getElementById('sid').value.trim(), dept=document.getElementById('dept').value.trim();
@@ -362,13 +382,13 @@ textarea{width:100%;font:inherit;font-size:.9rem;color:var(--ink);background:var
     var em=document.getElementById('em').value.trim(), emOk=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em);
     var scOk=document.getElementById('scok').checked, scYes=false, scAll=scOk;
     out.value=parts.length?('이름: '+(nm||'미입력')+' | 학번: '+(sid||'미입력')+' | 학과: '+(dept||'미입력')+' | 연락처: '+(ph||'미입력')+' | 이메일: '+(em||'미입력')+' | 만 19세 이상: '+(adult?'예':'아니오')+' | 규정 확인: '+(rules?'예':'아니오')+' | 가능한 일정 — '+parts.join(' | ')+' | 머리 감기: '+(w||'미선택')+' | 방문 1회 소요: '+durText(N)+' | 개인정보 수집·이용 동의: '+(agreed?'예':'아니오')+' | 영상 녹화 동의: '+(vid?'예':'아니오')+' | 참가 조건 확인: '+(scOk?'해당 없음':'미확인')):'';
-    var ready=done>0&&!!w&&shortN===0&&agreed&&vid&&!!nm&&!!sid&&!!dept&&ph.replace(/\D/g,'').length>=9&&emOk&&adult&&scOk&&rules;
+    var ready=done&&!!w&&shortN===0&&agreed&&vid&&!!nm&&!!sid&&!!dept&&ph.replace(/\D/g,'').length>=9&&emOk&&adult&&scOk&&rules;
     btn.disabled=!ready; setGo(ready,out.value);
     var sb=document.getElementById('submit');
     if(sb&&SCRIPT_URL){ sb.hidden=false; sb.disabled=!ready||sent; if(sent) sb.textContent='신청이 접수되었습니다' }
     if(Date.now()<noticeUntil) return;                 // a fresh warning is on screen: leave the message line to it
-    msg.className='small '+(items.length&&!ready&&!(agreed===false&&done>0&&w&&!shortN&&false)?'warn':'mut');
-    msg.textContent=!items.length?'가능한 시간을 칠해 주세요.':!w?'머리를 감고 가실지 먼저 골라 주세요.':!agreed?'개인정보 수집·이용에 동의해야 신청할 수 있습니다.':!vid?'영상 녹화에 동의해야 신청할 수 있습니다.':(!nm||!sid||!dept||ph.replace(/\D/g,'').length<9||!emOk)?'이름, 학번, 학과, 연락처, 이메일을 모두 올바르게 입력해 주세요.':!adult?'만 19세 이상이어야 참여할 수 있습니다.':scYes?'해당하는 항목이 있어 이번 실험에는 참여하실 수 없습니다.':!scAll?'참가 조건 확인에 체크해 주세요.':!rules?'참가비와 중도 하차 규정을 확인해 주세요.':shortN?'방문 한 번('+durText(N)+')보다 짧은 시간대가 '+shortN+'개 있습니다(빨간색). 늘리거나 지워 주세요.':!done?'월수금 또는 화목토 중 한 묶음은 세 날 모두 칠해야 합니다.':(partial.length?'미완성 묶음('+partial.join(', ')+')은 신청에 포함되지만 배정되지 않을 수 있습니다. ':'')+(SCRIPT_URL?'‘신청 보내기’를 누르면 바로 접수됩니다.':'');
+    msg.className='small '+(items.length&&!ready?'warn':'mut');
+    msg.textContent=!items.length?'가능한 시간을 칠해 주세요.':!w?'머리를 감고 가실지 먼저 골라 주세요.':!agreed?'개인정보 수집·이용에 동의해야 신청할 수 있습니다.':!vid?'영상 녹화에 동의해야 신청할 수 있습니다.':(!nm||!sid||!dept||ph.replace(/\D/g,'').length<9||!emOk)?'이름, 학번, 학과, 연락처, 이메일을 모두 올바르게 입력해 주세요.':!adult?'만 19세 이상이어야 참여할 수 있습니다.':scYes?'해당하는 항목이 있어 이번 실험에는 참여하실 수 없습니다.':!scAll?'참가 조건 확인에 체크해 주세요.':!rules?'참가비와 중도 하차 규정을 확인해 주세요.':shortN?'방문 한 번('+durText(N)+')보다 짧은 시간대가 '+shortN+'개 있습니다(빨간색). 늘리거나 지워 주세요.':!done?'서로 다른 날을 '+MINDAYS+'일 이상 칠해 주세요(지금 '+nDays+'일).':(SCRIPT_URL?'‘신청 보내기’를 누르면 바로 접수됩니다.':'');
   }
   var sent=false;
   (function(){
@@ -438,8 +458,8 @@ textarea{width:100%;font:inherit;font-size:.9rem;color:var(--ink);background:var
       drag={mode:hh?hh.dataset.h:'move',id:b.id,y0:e.clientY,s0:b.s,e0:b.e,col:vb.parentNode,moved:false};
     }else if(col&&!col.classList.contains('off')){
       var m=snap(minutesAt(col,e.clientY));
-      var cc=+col.dataset.c, days=cc%2===0?[0,2,4]:[1,3,5], ids=[];
-      days.forEach(function(c2){ var id=seq++; ids.push(id); items.push({id:id,w:+col.dataset.w,c:c2,s:clampT(m),e:clampT(m)+STEP}) });
+      var id0=seq++, ids=[id0];
+      items.push({id:id0,w:+col.dataset.w,c:+col.dataset.c,s:clampT(m),e:clampT(m)+STEP});
       drag={mode:'create',id:ids[0],ids:ids,y0:e.clientY,anchor:clampT(m),col:col,moved:false};
       if(anyClash()){ items=items.filter(function(x){return ids.indexOf(x.id)<0}); drag=null; notice('그 시간은 모집이 끝났습니다.'); render(); return }
     }else return;
@@ -465,7 +485,7 @@ textarea{width:100%;font:inherit;font-size:.9rem;color:var(--ink);background:var
   function finish(){
     if(!drag) return;
     var b=byId(drag.id);
-    if(b&&drag.mode==='create'&&!drag.moved){      // a plain click: one visit's worth of time around the click, on all three days
+    if(b&&drag.mode==='create'&&!drag.moved){      // a plain click: one visit's worth of time around the click
       var n=need(), s=Math.max(T0,Math.min(T1-n,snap(drag.anchor-n/2)));
       if(!settle(drag.ids,s,n)){ var gone=drag.ids; items=items.filter(function(x){return gone.indexOf(x.id)<0}); notice('그 요일에는 방문 한 번이 들어갈 빈 시간이 없습니다.'); }
     }
@@ -493,8 +513,8 @@ textarea{width:100%;font:inherit;font-size:.9rem;color:var(--ink);background:var
       var again=cal.querySelector('.vb[data-id="'+b.id+'"]'); if(again) again.focus();
     }else if(e.target.classList.contains('col')&&(e.key==='Enter'||e.key===' ')){
       e.preventDefault();
-      var col=e.target, n=need(), s=snap(Math.max(T0,mins('10:00'))), cc=+col.dataset.c;
-      var ids2=[]; (cc%2===0?[0,2,4]:[1,3,5]).forEach(function(c2){ var id=seq++; ids2.push(id); items.push({id:id,w:+col.dataset.w,c:c2,s:s,e:Math.min(T1,s+n)}) });
+      var col=e.target, n=need(), s=snap(Math.max(T0,mins('10:00'))), id2=seq++, ids2=[id2];
+      items.push({id:id2,w:+col.dataset.w,c:+col.dataset.c,s:s,e:Math.min(T1,s+n)});
       if(!settle(ids2,s,n)){ items=items.filter(function(x){return ids2.indexOf(x.id)<0}); notice('그 요일에는 방문 한 번이 들어갈 빈 시간이 없습니다.'); }
       merge(); render();
     }
