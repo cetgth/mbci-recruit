@@ -46,15 +46,14 @@ p{margin:0}
 .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:.82rem;color:var(--mut);margin-top:10px}
 .wk{font-size:.8rem;color:var(--mut);margin:14px 0 4px;font-family:var(--mono)}
 .tgw{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-inline:-4px;padding-inline:4px}
-.tg{display:grid;grid-template-columns:34px repeat(7,minmax(82px,1fr));column-gap:3px;user-select:none;-webkit-user-select:none}
+.tg{display:grid;grid-template-columns:34px repeat(7,minmax(0,1fr));column-gap:3px;user-select:none;-webkit-user-select:none}
 .hd{font-size:.76rem;text-align:center;padding-bottom:4px;color:var(--mut);line-height:1.25}
 .hd b{display:block;font-family:var(--mono);font-weight:500;font-size:.9rem}
 .hd.ga b{color:var(--a)} .hd.gb b{color:var(--b)}
 .axc{position:sticky;left:0;z-index:4;background:var(--panel)}
 .tg>.corner{position:sticky;left:0;z-index:4;background:var(--panel)}
-.swipe{display:none}
 @media (max-width:560px){
-  body{padding-inline:8px} .panel{padding:12px 10px} .swipe{display:block}
+  body{padding-inline:8px} .panel{padding:12px 8px}
 }
 .axc span{position:absolute;right:4px;transform:translateY(-50%);font-family:var(--mono);font-size:.66rem;color:var(--mut)}
 .col{position:relative;background-color:var(--soft);border-radius:6px;cursor:crosshair;touch-action:pan-x pan-y;overflow:hidden;
@@ -104,6 +103,8 @@ textarea{width:100%;font:inherit;font-size:.9rem;color:var(--ink);background:var
 .opt{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:6px;padding:10px 12px;cursor:pointer;background:var(--panel)}
 .opt input{width:18px;height:18px;accent-color:var(--a)}
 @media (max-width:560px){   /* phones: labels above their text so the text gets the full width (last, so it wins over the rules above) */
+  .tg{grid-template-columns:22px repeat(7,minmax(0,1fr));column-gap:2px} .axc span{right:2px;font-size:.6rem}
+  .vb{font-size:.6rem;letter-spacing:-.02em} .vb .in{padding:12px 0 0;text-align:center} .vb .tl{display:none} .vb .du{display:none} .vb .x{top:auto;bottom:22px;right:50%;margin-right:-10px}
   .facts{grid-template-columns:1fr;gap:0} .facts dt{margin-top:8px;font-size:.8rem} .facts dt:first-child{margin-top:0}
 }
 </style>
@@ -332,7 +333,7 @@ textarea{width:100%;font:inherit;font-size:.9rem;color:var(--ink);background:var
     var html='', N=need();
     for(var w=0;w<WEEKS;w++){
       var mon=addDays(start,w*7);
-      html+='<div class="wk">'+label(mon)+' 주</div><p class="swipe small mut">← 옆으로 밀면 주말까지 보입니다 →</p><div class="tgw"><div class="tg">';
+      html+='<div class="wk">'+label(mon)+' 주</div><div class="tgw"><div class="tg">';
       html+='<div class="corner"></div>';
       for(var i=0;i<NDAY;i++){ html+='<div class="hd">'+DOW[i]+'<b>'+addDays(mon,i).getDate()+'</b></div>' }
       var ticks=''; for(var m=T0;m<=T1;m+=60){ ticks+='<span style="top:'+((m-T0)*PX)+'px">'+('0'+m/60).slice(-2)+'</span>' }
@@ -342,7 +343,7 @@ textarea{width:100%;font:inherit;font-size:.9rem;color:var(--ink);background:var
         var inner=items.filter(function(x){return x.w===w&&x.c===c}).map(function(x){
           var short=(x.e-x.s)<N;
           return '<div class="vb'+(short?' short':'')+(drag&&drag.id===x.id?' dragging':'')+'" data-id="'+x.id+'" tabindex="0" role="group" aria-label="선택한 시간 '+hhmm(x.s)+'에서 '+hhmm(x.e)+'" style="top:'+((x.s-T0)*PX)+'px;height:'+Math.max(14,(x.e-x.s)*PX)+'px">'+
-            '<div class="h t" data-h="top"></div><div class="in">'+hhmm(x.s)+'<br>~'+hhmm(x.e)+(x.e-x.s>=40?'<br>'+durText(x.e-x.s):'')+(short&&x.e-x.s>=70?'<br>짧음':'')+'</div>'+
+            '<div class="h t" data-h="top"></div><div class="in">'+hhmm(x.s)+'<br><span class="tl">~</span>'+hhmm(x.e)+(x.e-x.s>=40?'<span class="du"><br>'+durText(x.e-x.s)+'</span>':'')+(short&&x.e-x.s>=70?'<br>짧음':'')+'</div>'+
             '<button type="button" class="x" data-del="'+x.id+'" aria-label="지우기">×</button><div class="h bt" data-h="bot"></div></div>';
         }).join('');
         var shut=TAKEN.filter(function(t){return t.c===c}).map(function(t){
