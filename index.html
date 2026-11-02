@@ -102,6 +102,11 @@ textarea{width:100%;font:inherit;font-size:.9rem;color:var(--ink);background:var
 .wash{display:flex;flex-direction:column;gap:8px}
 .opt{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:6px;padding:10px 12px;cursor:pointer;background:var(--panel)}
 .opt input{width:18px;height:18px;accent-color:var(--a)}
+.top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.lang{display:flex;flex:none;border:1px solid var(--line);border-radius:6px;overflow:hidden;font-size:.82rem;background:var(--panel)}
+.lang a{padding:6px 10px;color:var(--mut);text-decoration:none;min-height:32px;display:flex;align-items:center}
+.lang a[aria-current="true"]{background:var(--a);color:var(--a-ink)}
+.lang a:focus-visible{outline:2px solid var(--ink);outline-offset:-2px}
 @media (max-width:560px){   /* phones: labels above their text so the text gets the full width (last, so it wins over the rules above) */
   .tg{grid-template-columns:22px repeat(7,minmax(0,1fr));column-gap:2px} .axc span{right:2px;font-size:.6rem}
   .vb{font-size:.6rem;letter-spacing:-.02em} .vb .in{padding:12px 0 0;text-align:center} .vb .tl{display:none} .vb .du{display:none} .vb .x{top:auto;bottom:22px;right:50%;margin-right:-10px}
@@ -110,125 +115,129 @@ textarea{width:100%;font:inherit;font-size:.9rem;color:var(--ink);background:var
 </style>
 
 <div class="wrap">
-  <header>
-    <h1>참가 일정 선택</h1>
-    <p class="mut small" style="margin-top:4px">가능한 시간을 달력에 칠하고 ‘신청 보내기’를 누르면 끝입니다.</p>
+  <header class="top">
+    <div>
+      <h1 data-en="Choose your visit times">참가 일정 선택</h1>
+      <p class="mut small" style="margin-top:4px" data-en="Mark the times you are free on the calendar and press ‘Send application’. That is all.">가능한 시간을 달력에 칠하고 ‘신청 보내기’를 누르면 끝입니다.</p>
+    </div>
+    <nav class="lang" aria-label="Language / 언어"><a href="?lang=ko" id="lgKo" lang="ko">한국어</a><a href="?lang=en" id="lgEn" lang="en">English</a></nav>
   </header>
 
   <section class="panel" id="closedMsg" hidden>
-    <h2>이번 모집은 마감되었습니다</h2>
-    <p style="margin:0 0 8px">관심 가져 주시고 많이 신청해 주셔서 감사합니다. 이번 실험은 파일럿이라 아주 적은 인원만 모집했습니다.</p>
-    <p style="margin:0">실험을 더 다듬어 <b>12월~2월 중에 더 재미있는 실험으로 다시 모집</b>할 예정입니다. 그때 많은 참여 부탁드립니다.</p>
-    <p class="small mut" style="margin:10px 0 0">문의: 010-3190-4473 (문자·전화) 또는 cetgth@unist.ac.kr</p>
+    <h2 data-en="Recruitment for this round has closed">이번 모집은 마감되었습니다</h2>
+    <p style="margin:0 0 8px" data-en="Thank you for your interest and for the many applications. This round was a pilot study with only a few places.">관심 가져 주시고 많이 신청해 주셔서 감사합니다. 이번 실험은 파일럿이라 아주 적은 인원만 모집했습니다.</p>
+    <p style="margin:0" data-en="We will improve the experiment and &lt;b&gt;recruit again between December and February with a more enjoyable experiment&lt;/b&gt;. We hope you will join us then.">실험을 더 다듬어 <b>12월~2월 중에 더 재미있는 실험으로 다시 모집</b>할 예정입니다. 그때 많은 참여 부탁드립니다.</p>
+    <p class="small mut" style="margin:10px 0 0" data-en="Contact: 010-3190-4473 (text or call) or cetgth@unist.ac.kr">문의: 010-3190-4473 (문자·전화) 또는 cetgth@unist.ac.kr</p>
   </section>
 
   <section class="panel" id="notifyBox" hidden>
-    <h2>다음 실험 알림 받기</h2>
-    <p class="small mut" style="margin:0 0 10px">다음 모집이 시작되면 이메일로 가장 먼저 알려 드립니다.</p>
+    <h2 data-en="Get notified about the next experiment">다음 실험 알림 받기</h2>
+    <p class="small mut" style="margin:0 0 10px" data-en="When the next round opens, we will tell you first by e-mail.">다음 모집이 시작되면 이메일로 가장 먼저 알려 드립니다.</p>
     <div id="nfForm">
       <div class="grid2">
-        <label class="fld">이름<input type="text" id="nfnm" autocomplete="name" maxlength="30"></label>
-        <label class="fld">이메일<input type="email" id="nfem" autocomplete="email" maxlength="80" placeholder="name@unist.ac.kr"></label>
-        <label class="fld">연락처 (선택)<input type="tel" id="nfph" inputmode="numeric" autocomplete="tel" maxlength="13" placeholder="010-0000-0000"></label>
+        <label class="fld"><span data-en="Name">이름</span><input type="text" id="nfnm" autocomplete="name" maxlength="30"></label>
+        <label class="fld"><span data-en="E-mail">이메일</span><input type="email" id="nfem" autocomplete="email" maxlength="80" placeholder="name@unist.ac.kr"></label>
+        <label class="fld"><span data-en="Phone, optional">연락처 (선택)</span><input type="tel" id="nfph" inputmode="numeric" autocomplete="tel" maxlength="13" placeholder="010-0000-0000"></label>
       </div>
-      <label class="agree"><input type="checkbox" id="nfok"><span><b>[필수]</b> 다음 모집 안내를 위해 이름 · 이메일 · 연락처를 수집 · 이용하는 데 동의합니다. 다음 모집 안내 뒤 파기하며, 원하시면 언제든 메일로 삭제를 요청할 수 있습니다.</span></label>
+      <label class="agree"><input type="checkbox" id="nfok"><span data-en="&lt;b&gt;[Required]&lt;/b&gt; I agree that my name, e-mail and phone number are collected and used to tell me about the next round. They are deleted after that notice, and I can ask for deletion by e-mail at any time."><b>[필수]</b> 다음 모집 안내를 위해 이름 · 이메일 · 연락처를 수집 · 이용하는 데 동의합니다. 다음 모집 안내 뒤 파기하며, 원하시면 언제든 메일로 삭제를 요청할 수 있습니다.</span></label>
       <div style="display:flex;gap:10px;align-items:center;margin-top:12px;flex-wrap:wrap">
-        <button class="btn" id="nfgo" type="button" disabled>알림 신청</button>
-        <span class="small mut" id="nfmsg">이메일과 동의가 있어야 신청할 수 있습니다.</span>
+        <button class="btn" id="nfgo" type="button" disabled data-en="Sign up">알림 신청</button>
+        <span class="small mut" id="nfmsg" data-en="An e-mail address and your consent are needed.">이메일과 동의가 있어야 신청할 수 있습니다.</span>
       </div>
     </div>
-    <p id="nfDone" hidden style="margin:0"><b>알림 신청이 접수되었습니다.</b> 다음 모집이 시작되면 메일로 알려 드리겠습니다.</p>
+    <p id="nfDone" hidden style="margin:0" data-en="&lt;b&gt;You are signed up.&lt;/b&gt; We will e-mail you when the next round opens."><b>알림 신청이 접수되었습니다.</b> 다음 모집이 시작되면 메일로 알려 드리겠습니다.</p>
   </section>
 
   <section class="panel">
-    <h2>실험 안내</h2>
+    <h2 data-en="About the experiment">실험 안내</h2>
     <dl class="facts">
-      <dt>방문 횟수</dt><dd>총 3회 (서로 다른 날)</dd>
-      <dt>장소</dt><dd>104동 903B호 (카페 리차드와 같은 건물)</dd>
-      <dt>한 번에</dt><dd>약 2시간 30분(머리 감을 시 약 3시간)</dd>
-      <dt>참가비</dt><dd>3회 모두 마치면 <b>총 15만 원</b> (회당 기본금 3만 원 + 완료 보너스 6만 원)</dd>
+      <dt data-en="Visits">방문 횟수</dt><dd data-en="3 in total, on different days">총 3회 (서로 다른 날)</dd>
+      <dt data-en="Place">장소</dt><dd data-en="Building 104, Room 903B, UNIST (the building with Cafe Richard)">104동 903B호 (카페 리차드와 같은 건물)</dd>
+      <dt data-en="Each visit">한 번에</dt><dd data-en="About 2 h 30 min, about 3 h if you wash your hair here">약 2시간 30분(머리 감을 시 약 3시간)</dd>
+      <dt data-en="Fee">참가비</dt><dd data-en="&lt;b&gt;150,000 KRW in total&lt;/b&gt; when you finish all 3 visits: 30,000 KRW per visit + 60,000 KRW completion bonus">3회 모두 마치면 <b>총 15만 원</b> (회당 기본금 3만 원 + 완료 보너스 6만 원)</dd>
+      <dt data-en-only hidden>Language</dt><dd data-en-only hidden>Every instruction and questionnaire on the experiment screen is in English.</dd>
     </dl>
   </section>
 
   <details class="panel" id="lk" hidden>
-    <summary style="cursor:pointer;font-weight:600">이미 신청하셨나요? 신청 내역 확인</summary>
+    <summary style="cursor:pointer;font-weight:600" data-en="Already applied? Check your application">이미 신청하셨나요? 신청 내역 확인</summary>
     <div class="grid2" style="margin-top:12px">
-      <label class="fld">학번<input type="text" id="lksid" inputmode="numeric" maxlength="12" autocomplete="off"></label>
-      <label class="fld">연락처<input type="tel" id="lkph" inputmode="numeric" maxlength="13" placeholder="010-0000-0000"></label>
+      <label class="fld"><span data-en="Student ID">학번</span><input type="text" id="lksid" inputmode="numeric" maxlength="12" autocomplete="off"></label>
+      <label class="fld"><span data-en="Phone">연락처</span><input type="tel" id="lkph" inputmode="numeric" maxlength="13" placeholder="010-0000-0000"></label>
     </div>
     <div style="display:flex;gap:10px;align-items:center;margin-top:10px;flex-wrap:wrap">
-      <button class="btn" id="lkgo" type="button">내역 확인</button>
-      <span class="small mut">일정을 바꾸려면 다시 신청하세요. 가장 최근 신청이 적용됩니다.</span>
+      <button class="btn" id="lkgo" type="button" data-en="Check">내역 확인</button>
+      <span class="small mut" data-en="To change your times, apply again. The latest application counts.">일정을 바꾸려면 다시 신청하세요. 가장 최근 신청이 적용됩니다.</span>
     </div>
     <div id="lkout" class="small" style="margin-top:12px"></div>
   </details>
 
   <section class="panel consent">
-    <h2>개인정보 수집·이용 동의</h2>
-    <p class="small mut" style="margin-bottom:10px">신청과 일정 조율에 쓰입니다.</p>
+    <h2 data-en="Consent to the collection and use of personal information">개인정보 수집·이용 동의</h2>
+    <p class="small mut" style="margin-bottom:10px" data-en="Used for your application and scheduling.">신청과 일정 조율에 쓰입니다.</p>
     <dl id="consentBody"></dl>
-    <label class="agree"><input type="checkbox" id="agree"><span><b>[필수]</b> 위 개인정보 수집·이용에 동의합니다.</span></label>
-    <label class="agree"><input type="checkbox" id="vid"><span><b>[필수]</b> 실험 중 영상 녹화(얼굴 포함)에 동의합니다.</span></label>
+    <label class="agree"><input type="checkbox" id="agree"><span data-en="&lt;b&gt;[Required]&lt;/b&gt; I agree to the collection and use of personal information above."><b>[필수]</b> 위 개인정보 수집·이용에 동의합니다.</span></label>
+    <label class="agree"><input type="checkbox" id="vid"><span data-en="&lt;b&gt;[Required]&lt;/b&gt; I agree to video recording during the experiment, face included."><b>[필수]</b> 실험 중 영상 녹화(얼굴 포함)에 동의합니다.</span></label>
     <div class="todo" id="todo" hidden></div>
   </section>
 
   <section class="panel">
-    <h2>신청자 정보</h2>
+    <h2 data-en="Your details">신청자 정보</h2>
     <div class="grid2">
-      <label class="fld">이름<input type="text" id="nm" autocomplete="name" maxlength="30"></label>
-      <label class="fld">연락처 (휴대폰)<input type="tel" id="ph" inputmode="numeric" autocomplete="tel" maxlength="13" placeholder="010-0000-0000"></label>
-      <label class="fld">학번<input type="text" id="sid" inputmode="numeric" autocomplete="off" maxlength="20"></label>
-      <label class="fld">학과<input type="text" id="dept" autocomplete="off" maxlength="40"></label>
-      <label class="fld">이메일<input type="email" id="em" autocomplete="email" maxlength="80" placeholder="name@unist.ac.kr"></label>
+      <label class="fld"><span data-en="Name">이름</span><input type="text" id="nm" autocomplete="name" maxlength="30"></label>
+      <label class="fld"><span data-en="Mobile phone">연락처 (휴대폰)</span><input type="tel" id="ph" inputmode="numeric" autocomplete="tel" maxlength="13" placeholder="010-0000-0000"></label>
+      <label class="fld"><span data-en="Student ID">학번</span><input type="text" id="sid" inputmode="numeric" autocomplete="off" maxlength="20"></label>
+      <label class="fld"><span data-en="Department">학과</span><input type="text" id="dept" autocomplete="off" maxlength="40"></label>
+      <label class="fld"><span data-en="E-mail">이메일</span><input type="email" id="em" autocomplete="email" maxlength="80" placeholder="name@unist.ac.kr"></label>
     </div>
-    <label class="agree"><input type="checkbox" id="adult"><span>만 19세 이상입니다.</span></label>
+    <label class="agree"><input type="checkbox" id="adult"><span data-en="I am 19 years old or older.">만 19세 이상입니다.</span></label>
   </section>
 
   <section class="panel">
-    <h2>참가 조건 확인</h2>
-    <p class="small mut" style="margin-bottom:6px">하나라도 해당하면 참여가 어렵습니다.</p>
+    <h2 data-en="Eligibility">참가 조건 확인</h2>
+    <p class="small mut" style="margin-bottom:6px" data-en="If any of these applies to you, you cannot take part.">하나라도 해당하면 참여가 어렵습니다.</p>
     <div id="screen"></div>
   </section>
 
   <section class="panel">
-    <h2>1. 머리를 감고 가실지 먼저 고르세요</h2>
-    <p style="margin:0 0 10px">뇌파 측정용 젤을 두피에 바릅니다. <b>감지 않으면 머리가 끈적이고 뭉친 채로 가셔야 합니다.</b> 끝나고 실험실에서 머리를 감고 갈 수 있습니다.</p>
+    <h2 data-en="1. First, choose whether you will wash your hair">1. 머리를 감고 가실지 먼저 고르세요</h2>
+    <p style="margin:0 0 10px" data-en="We put EEG gel on your scalp. &lt;b&gt;If you do not wash it out, you leave with sticky, clumped hair.&lt;/b&gt; You can wash your hair in the lab after the session.">뇌파 측정용 젤을 두피에 바릅니다. <b>감지 않으면 머리가 끈적이고 뭉친 채로 가셔야 합니다.</b> 끝나고 실험실에서 머리를 감고 갈 수 있습니다.</p>
     <div class="wash">
-      <label class="opt"><input type="radio" name="wash" value="감음"> 감고 갑니다 · 방문이 30분 늘어납니다</label>
-      <label class="opt"><input type="radio" name="wash" value="안 감음"> 감지 않고 갑니다</label>
+      <label class="opt"><input type="radio" name="wash" value="감음"> <span data-en="I will wash my hair here · the visit takes 30 minutes longer">감고 갑니다 · 방문이 30분 늘어납니다</span></label>
+      <label class="opt"><input type="radio" name="wash" value="안 감음"> <span data-en="I will not wash my hair">감지 않고 갑니다</span></label>
     </div>
   </section>
 
   <section class="panel">
-    <h2>2. 가능한 시간을 모두 칠하세요</h2>
+    <h2 data-en="2. Mark every time you are free">2. 가능한 시간을 모두 칠하세요</h2>
     <p class="small" id="period"></p>
-    <p class="small"><b>서로 다른 날 3일 이상</b> 칠해 주세요. 많이 칠할수록 일정 잡기가 쉽습니다.</p>
+    <p class="small" data-en="&lt;b&gt;Mark at least 3 different days.&lt;/b&gt; The more you mark, the easier scheduling is."><b>서로 다른 날 3일 이상</b> 칠해 주세요. 많이 칠할수록 일정 잡기가 쉽습니다.</p>
     <ul class="small mut" style="margin:6px 0 0;padding-left:18px;display:flex;flex-direction:column;gap:2px">
-      <li>칠하기: 누르거나 아래로 끌기</li>
-      <li>고치기: 가장자리 끌기 = 길이, 가운데 끌기 = 위치, × = 지우기</li>
-      <li>휴대폰: 한 번 누른 뒤 아래 가장자리를 끌어 늘리기</li>
+      <li data-en="Mark: tap, or drag down">칠하기: 누르거나 아래로 끌기</li>
+      <li data-en="Adjust: drag an edge = length, drag the middle = position, × = delete">고치기: 가장자리 끌기 = 길이, 가운데 끌기 = 위치, × = 지우기</li>
+      <li data-en="On a phone: tap once, then drag the bottom edge to extend">휴대폰: 한 번 누른 뒤 아래 가장자리를 끌어 늘리기</li>
     </ul>
-    <div style="display:flex;justify-content:flex-end;margin-top:10px"><button type="button" class="btn" id="reset" disabled>초기화</button></div>
+    <div style="display:flex;justify-content:flex-end;margin-top:10px"><button type="button" class="btn" id="reset" disabled data-en="Clear">초기화</button></div>
     <div id="cal"></div>
-    <div class="legend"><span><span class="sw" style="background:var(--a)"></span>선택한 시간</span><span><span class="sw" style="background:var(--soft);border:1px solid var(--line)"></span>가능한 시간</span><span><span class="sw" style="background:repeating-linear-gradient(135deg,var(--line) 0 3px,var(--soft) 3px 6px)"></span>마감</span></div>
+    <div class="legend"><span><span class="sw" style="background:var(--a)"></span><span data-en="Your times">선택한 시간</span></span><span><span class="sw" style="background:var(--soft);border:1px solid var(--line)"></span><span data-en="Open">가능한 시간</span></span><span><span class="sw" style="background:repeating-linear-gradient(135deg,var(--line) 0 3px,var(--soft) 3px 6px)"></span><span data-en="Closed">마감</span></span></div>
     <p class="small mut" id="sumLine" style="margin-top:8px"></p>
   </section>
 
   <section class="panel">
-    <h2>참가비와 중도 하차 규정</h2>
+    <h2 data-en="Fee and withdrawal">참가비와 중도 하차 규정</h2>
     <ul class="small" style="margin:0;padding-left:18px;display:flex;flex-direction:column;gap:2px">
-      <li>매 회차 기본금 3만 원, 3회를 모두 마치면 완료 보너스 6만 원 추가 (총 15만 원)</li>
-      <li>연구 진행상 연구자가 1~2회에서 마치는 경우 마친 회당 5만 원</li>
-      <li>피험자의 개인 사정으로 중도 하차 시 마친 회차의 기본금(회당 3만 원)만 지급</li>
-      <li>마지막에 일괄 지급. 첫 방문 때 <b>계좌 정보</b>를 가져와 주세요</li>
+      <li data-en="30,000 KRW per visit, plus a 60,000 KRW completion bonus when you finish all 3 visits: 150,000 KRW in total">매 회차 기본금 3만 원, 3회를 모두 마치면 완료 보너스 6만 원 추가 (총 15만 원)</li>
+      <li data-en="If the researcher ends your participation after 1 or 2 visits for study reasons: 50,000 KRW per completed visit">연구 진행상 연구자가 1~2회에서 마치는 경우 마친 회당 5만 원</li>
+      <li data-en="If you stop for personal reasons: only the base fee of the visits you completed, 30,000 KRW each">피험자의 개인 사정으로 중도 하차 시 마친 회차의 기본금(회당 3만 원)만 지급</li>
+      <li data-en="Paid in one payment at the end. Please bring your &lt;b&gt;bank account details&lt;/b&gt; to the first visit">마지막에 일괄 지급. 첫 방문 때 <b>계좌 정보</b>를 가져와 주세요</li>
     </ul>
-    <label class="agree"><input type="checkbox" id="rules"><span><b>[필수]</b> 위 규정을 확인했고 동의합니다.</span></label>
+    <label class="agree"><input type="checkbox" id="rules"><span data-en="&lt;b&gt;[Required]&lt;/b&gt; I have read and agree to these rules."><b>[필수]</b> 위 규정을 확인했고 동의합니다.</span></label>
   </section>
 
   <section class="panel">
     <textarea id="out" readonly hidden style="display:none"></textarea>
     <div style="display:flex;gap:10px;align-items:center;margin-top:8px;flex-wrap:wrap">
-      <button class="b" id="submit" disabled hidden>신청 보내기</button>
+      <button class="b" id="submit" disabled hidden data-en="Send application">신청 보내기</button>
       <a class="b" id="go" href="#" target="_blank" rel="noopener" aria-disabled="true" hidden style="display:none;text-decoration:none">신청서 열기</a>
       <button class="btn" id="copy" disabled hidden style="display:none">선택 내용 복사</button>
     </div>
@@ -238,19 +247,33 @@ textarea{width:100%;font:inherit;font-size:.9rem;color:var(--ink);background:var
 
 <div class="wrap" id="done" hidden>
   <section class="panel" style="margin-top:24px">
-    <h1 style="font-size:1.4rem;margin-bottom:10px">신청이 접수되었습니다</h1>
+    <h1 style="font-size:1.4rem;margin-bottom:10px" data-en="Application received">신청이 접수되었습니다</h1>
     <p id="doneWho" style="margin-bottom:10px"></p>
     <dl style="display:grid;grid-template-columns:auto 1fr;gap:6px 12px;margin:0 0 14px;font-size:.92rem">
-      <dt class="mut">다음 단계</dt><dd style="margin:0">신청하신 일정을 검토한 뒤, 입력하신 연락처로 확정 여부와 방문 일정을 알려 드립니다.</dd>
-      <dt class="mut">준비</dt><dd style="margin:0">첫 방문 전에 참가비 지급에 필요한 계좌와 신고 정보를 현장에서 받습니다.</dd>
-      <dt class="mut">문의</dt><dd style="margin:0">cetgth@unist.ac.kr</dd>
+      <dt class="mut" data-en="Next">다음 단계</dt><dd style="margin:0" data-en="We will review your times and tell you by phone or e-mail whether your visits are confirmed and when.">신청하신 일정을 검토한 뒤, 입력하신 연락처로 확정 여부와 방문 일정을 알려 드립니다.</dd>
+      <dt class="mut" data-en="Payment">준비</dt><dd style="margin:0" data-en="Before your first visit starts, we will ask on site for the bank account and identification details needed for the payment.">첫 방문 전에 참가비 지급에 필요한 계좌와 신고 정보를 현장에서 받습니다.</dd>
+      <dt class="mut" data-en="Contact">문의</dt><dd style="margin:0">cetgth@unist.ac.kr</dd>
     </dl>
-    <p class="small mut">이 창은 닫으셔도 됩니다. 같은 내용을 다시 신청하실 필요가 없습니다.</p>
+    <p class="small mut" data-en="You can close this window. There is no need to apply again.">이 창은 닫으셔도 됩니다. 같은 내용을 다시 신청하실 필요가 없습니다.</p>
   </section>
 </div>
 
 <script>
 (function(){
+  /* language (2026-11-03, foreign participants): ?lang=en | ko, else the last choice in this browser, else the browser language. The data sent to the sheet stays Korean */
+  var EN=(function(){
+    var q=/[?&]lang=(ko|en)\b/.exec(location.search);
+    if(q){ try{ localStorage.setItem('mbciLang',q[1]) }catch(x){} return q[1]==='en' }
+    try{ var st=localStorage.getItem('mbciLang'); if(st) return st==='en' }catch(x){}
+    return !/^ko\b/i.test(navigator.language||'ko');
+  })();
+  function L(ko,en){ return EN?en:ko }
+  document.getElementById(EN?'lgEn':'lgKo').setAttribute('aria-current','true');
+  if(EN){
+    document.documentElement.lang='en'; document.title='Choose your visit times';
+    document.querySelectorAll('[data-en]').forEach(function(el){ el.innerHTML=el.getAttribute('data-en') });
+    document.querySelectorAll('[data-en-only]').forEach(function(el){ el.hidden=false });
+  }
   /* edit these lines for the recruiting period */
   var EPOCH='2026-11-02';   // day 0 of every stored day number (c = days since this Monday). Never change it
   var PSTART='2026-11-02', PEND='2026-11-08';   // recruiting period shown to applicants; the admin page overrides it (?action=period)
@@ -264,8 +287,18 @@ textarea{width:100%;font:inherit;font-size:.9rem;color:var(--ink);background:var
   var FORM_URL='';          // sign-up form link (Google Form: .../viewform). Empty = copy-and-paste mode
   var SCRIPT_URL='https://script.google.com/macros/s/AKfycbzldz3xryZpWzQ0GEWMz08DcO8KT3cEyMSm7CWbC8dtMQT5J8pjtst0UQPhbnn10hoS/exec';        // Apps Script web app (.../exec). When set, the page submits directly and loads closed intervals from it
   var FORM_ENTRY='';        // the form field that receives the schedule, e.g. entry.1234567890
-  var DOW=['월','화','수','목','금','토','일'];
+  var DOW=['월','화','수','목','금','토','일'];            // Korean day names: the text sent to the sheet always uses these
+  var DOWD=EN?['Mon','Tue','Wed','Thu','Fri','Sat','Sun']:DOW;   // day names on screen
   var NDAY=7, MINDAYS=3;    // days shown per week (Mon..Sun); different days an applicant must mark
+  var SCREEN_EN=[
+    'Difficulty hearing, a hearing aid or cochlear implant, or severe tinnitus',
+    'Difficulty reading text on a screen even with glasses or contact lenses',
+    'Difficulty reading and following instructions in English',
+    'Epilepsy, or a seizure in the past',
+    'Diagnosis or treatment for a brain disease, a serious head injury or a neurological disorder',
+    'Currently taking medication that affects attention or alertness, such as psychiatric medication or sleeping pills',
+    'A wound, inflammation or skin condition on the scalp, or an allergy to electrode gel'
+  ];
   var SCREEN=[
     '듣기가 어렵거나, 보청기·인공와우를 쓰거나, 이명이 심함',
     '안경·렌즈를 껴도 화면 글자를 읽기 어려움',
@@ -274,6 +307,17 @@ textarea{width:100%;font:inherit;font-size:.9rem;color:var(--ink);background:var
     '뇌 질환, 심한 머리 부상, 신경계 질환으로 진단·치료받은 적 있음',
     '집중·각성에 영향을 주는 약(정신과 약, 수면제 등)을 먹는 중',
     '두피에 상처·염증·피부질환이 있거나 젤 알레르기가 있음'
+  ];
+  var CONSENT_EN=[
+    ['Purpose','Recruiting participants, checking eligibility, scheduling visits and contacting you (the confirmation mail and the reminder the day before a visit included), and paying the fee'],
+    ['Items collected','Name, student ID, department, phone number, e-mail, available times and the hair-washing choice. The bank account and identification details needed for the payment are collected separately on site before your first visit'],
+    ['Video recording','Your face and upper body are video-recorded during the experiment. The video is used only to check muscle signals and movement and to analyse the data, and only the researchers can view it'],
+    ['Video storage and deletion','Kept until the data analysis is finished, then deleted without delay. Video in which your face can be recognised is never used in papers or talks'],
+    ['Retention period','Kept until the fee is paid and the data collection is finished, then deleted without delay'],
+    ['Storage','Your application is stored in a Google Sheet that only the researchers can view'],
+    ['Third parties','Not given to any third party'],
+    ['Right to refuse','You may refuse consent, but then you cannot take part in the experiment'],
+    ['Contact','cetgth@unist.ac.kr']
   ];
   /* consent text: fill every [bracket] before publishing the link. Items left in brackets are shown in red. */
   var CONSENT=[
@@ -294,7 +338,8 @@ textarea{width:100%;font:inherit;font-size:.9rem;color:var(--ink);background:var
   function mins(t){var a=t.split(':');return +a[0]*60+ +a[1]}
   function hhmm(m){return ('0'+Math.floor(m/60)).slice(-2)+':'+('0'+(m%60)).slice(-2)}
   function label(d){return (d.getMonth()+1)+'/'+d.getDate()}
-  function durText(m){var h=Math.floor(m/60), r=m%60; return (h?h+'시간':'')+(h&&r?' ':'')+(r||!h?r+'분':'')}
+  function durText(m){var h=Math.floor(m/60), r=m%60; return (h?h+'시간':'')+(h&&r?' ':'')+(r||!h?r+'분':'')}   // Korean: also used in the text sent to the sheet
+  function durD(m){ if(!EN) return durText(m); var h=Math.floor(m/60), r=m%60; return (h?h+' h':'')+(h&&r?' ':'')+(r||!h?r+' min':'') }
   var T0=mins(AX0), T1=mins(AX1), SPAN=T1-T0, H=SPAN*PX;
   var today=new Date(); today=new Date(today.getFullYear(),today.getMonth(),today.getDate());
   var start, W0, WEEKS, pS, pE;   // first Monday shown, its week number since EPOCH, weeks shown, period first/last day
@@ -304,7 +349,7 @@ textarea{width:100%;font:inherit;font-size:.9rem;color:var(--ink);background:var
     W0=Math.round((start-parse(EPOCH))/604800000);
     WEEKS=Math.floor(Math.round((pE-start)/86400000)/7)+1;
     var pe=document.getElementById('period');
-    if(pe) pe.innerHTML='모집 기간: <b>'+label(pS)+'('+DOW[(pS.getDay()+6)%7]+') ~ '+label(pE)+'('+DOW[(pE.getDay()+6)%7]+')</b>';
+    if(pe) pe.innerHTML=L('모집 기간: ','Recruiting period: ')+'<b>'+label(pS)+'('+DOWD[(pS.getDay()+6)%7]+') ~ '+label(pE)+'('+DOWD[(pE.getDay()+6)%7]+')</b>';
   }
   setPeriod(PSTART,PEND);
   var items=[];            // {id,w,c,s,e}  w = week shown (0 = first), c = day column 0..6 (Mon..Sun)
@@ -314,16 +359,16 @@ textarea{width:100%;font:inherit;font-size:.9rem;color:var(--ink);background:var
   (function(){
     var box=document.getElementById('screen');
     var ul=document.createElement('ul'); ul.style.cssText='margin:0 0 4px;padding-left:20px;font-size:.9rem;display:flex;flex-direction:column;gap:5px';
-    SCREEN.forEach(function(t){ var li=document.createElement('li'); li.textContent=t; ul.appendChild(li) });
+    (EN?SCREEN_EN:SCREEN).forEach(function(t){ var li=document.createElement('li'); li.textContent=t; ul.appendChild(li) });
     box.appendChild(ul);
     var l=document.createElement('label'); l.className='agree';
     var c=document.createElement('input'); c.type='checkbox'; c.id='scok';
-    var sp=document.createElement('span'); sp.innerHTML='<b>[필수]</b> 해당하는 것이 없습니다.';
+    var sp=document.createElement('span'); sp.innerHTML=L('<b>[필수]</b> 해당하는 것이 없습니다.','<b>[Required]</b> None of these applies to me.');
     l.appendChild(c); l.appendChild(sp); box.appendChild(l);
   })();
   (function(){
     var left=0;
-    document.getElementById('consentBody').innerHTML=CONSENT.map(function(r){
+    document.getElementById('consentBody').innerHTML=(EN?CONSENT_EN:CONSENT).map(function(r){
       var txt=r[1].replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/\[([^\]]+)\]/g,function(m){ left++; return '<span class="ph">'+m+'</span>' });
       return '<dt>'+r[0]+'</dt><dd>'+txt+'</dd>';
     }).join('');
@@ -370,23 +415,23 @@ textarea{width:100%;font:inherit;font-size:.9rem;color:var(--ink);background:var
     var html='', N=need();
     for(var w=0;w<WEEKS;w++){
       var mon=addDays(start,w*7);
-      html+='<div class="wk">'+label(mon)+' 주</div><div class="tgw"><div class="tg">';
+      html+='<div class="wk">'+L(label(mon)+' 주','Week of '+label(mon))+'</div><div class="tgw"><div class="tg">';
       html+='<div class="corner"></div>';
-      for(var i=0;i<NDAY;i++){ html+='<div class="hd">'+DOW[i]+'<b>'+addDays(mon,i).getDate()+'</b></div>' }
+      for(var i=0;i<NDAY;i++){ html+='<div class="hd">'+DOWD[i]+'<b>'+addDays(mon,i).getDate()+'</b></div>' }
       var ticks=''; for(var m=T0;m<=T1;m+=60){ ticks+='<span style="top:'+((m-T0)*PX)+'px">'+('0'+m/60).slice(-2)+'</span>' }
       html+='<div class="axc" style="height:'+H+'px">'+ticks+'</div>';
       for(var c=0;c<NDAY;c++){
         var ok=dayOk(w,c);
         var inner=items.filter(function(x){return x.w===w&&x.c===c}).map(function(x){
           var short=(x.e-x.s)<N;
-          return '<div class="vb'+(short?' short':'')+(drag&&drag.id===x.id?' dragging':'')+'" data-id="'+x.id+'" tabindex="0" role="group" aria-label="선택한 시간 '+hhmm(x.s)+'에서 '+hhmm(x.e)+'" style="top:'+((x.s-T0)*PX)+'px;height:'+Math.max(14,(x.e-x.s)*PX)+'px">'+
-            '<div class="h t" data-h="top"></div><div class="in">'+hhmm(x.s)+'<br><span class="tl">~</span>'+hhmm(x.e)+(x.e-x.s>=40?'<span class="du"><br>'+durText(x.e-x.s)+'</span>':'')+(short&&x.e-x.s>=70?'<br>짧음':'')+'</div>'+
-            '<button type="button" class="x" data-del="'+x.id+'" aria-label="지우기">×</button><div class="h bt" data-h="bot"></div></div>';
+          return '<div class="vb'+(short?' short':'')+(drag&&drag.id===x.id?' dragging':'')+'" data-id="'+x.id+'" tabindex="0" role="group" aria-label="'+L('선택한 시간 '+hhmm(x.s)+'에서 '+hhmm(x.e),'Your time '+hhmm(x.s)+' to '+hhmm(x.e))+'" style="top:'+((x.s-T0)*PX)+'px;height:'+Math.max(14,(x.e-x.s)*PX)+'px">'+
+            '<div class="h t" data-h="top"></div><div class="in">'+hhmm(x.s)+'<br><span class="tl">~</span>'+hhmm(x.e)+(x.e-x.s>=40?'<span class="du"><br>'+durD(x.e-x.s)+'</span>':'')+(short&&x.e-x.s>=70?'<br>'+L('짧음','short'):'')+'</div>'+
+            '<button type="button" class="x" data-del="'+x.id+'" aria-label="'+L('지우기','Delete')+'">×</button><div class="h bt" data-h="bot"></div></div>';
         }).join('');
         var shut=TAKEN.filter(function(t){return +t.c===absDay(w,c)}).map(function(t){
-          return '<div class="closed" title="모집이 끝난 시간입니다" style="top:'+((mins(t.s)-T0)*PX)+'px;height:'+((mins(t.e)-mins(t.s))*PX)+'px">마감</div>';
+          return '<div class="closed" title="'+L('모집이 끝난 시간입니다','This time is no longer available')+'" style="top:'+((mins(t.s)-T0)*PX)+'px;height:'+((mins(t.e)-mins(t.s))*PX)+'px">'+L('마감','Closed')+'</div>';
         }).join('');
-        html+='<div class="col'+(ok?'':' off')+'" data-w="'+w+'" data-c="'+c+'" '+(ok?'tabindex="0" ':'')+'aria-label="'+DOW[c]+'요일, 끌어서 가능한 시간 칠하기" style="height:'+H+'px;background-size:100% '+(60*PX)+'px">'+shut+inner+'</div>';
+        html+='<div class="col'+(ok?'':' off')+'" data-w="'+w+'" data-c="'+c+'" '+(ok?'tabindex="0" ':'')+'aria-label="'+L(DOW[c]+'요일, 끌어서 가능한 시간 칠하기',DOWD[c]+': drag to mark a free time')+'" style="height:'+H+'px;background-size:100% '+(60*PX)+'px">'+shut+inner+'</div>';
       }
       html+='</div></div>';
     }
@@ -412,7 +457,8 @@ textarea{width:100%;font:inherit;font-size:.9rem;color:var(--ink);background:var
     var done=nDays>=MINDAYS;
     var out=document.getElementById('out'), btn=document.getElementById('copy'), msg=document.getElementById('msg'), sl=document.getElementById('sumLine');
     var rb=document.getElementById('reset'); if(rb) rb.disabled=!(items.length||w||document.getElementById('agree').checked);
-    sl.textContent=items.length?'선택한 시간대 '+items.length+'구간 · 칠한 날 '+nDays+'일'+(done?'':' (서로 다른 날 '+MINDAYS+'일 이상 필요)')+' · 한 번의 방문에 필요한 시간 '+durText(N)+(w?'':' (머리 감기를 고르면 정해집니다)'):'아직 칠한 시간이 없습니다.';
+    sl.textContent=EN?(items.length?items.length+' time block'+(items.length>1?'s':'')+' · '+nDays+' day'+(nDays>1?'s':'')+' marked'+(done?'':', at least '+MINDAYS+' different days needed')+' · one visit takes '+durD(N)+(w?'':', set once you choose hair washing'):'Nothing marked yet.')
+      :(items.length?'선택한 시간대 '+items.length+'구간 · 칠한 날 '+nDays+'일'+(done?'':' (서로 다른 날 '+MINDAYS+'일 이상 필요)')+' · 한 번의 방문에 필요한 시간 '+durText(N)+(w?'':' (머리 감기를 고르면 정해집니다)'):'아직 칠한 시간이 없습니다.');
     var agreed=document.getElementById('agree').checked, nm=document.getElementById('nm').value.trim(), ph=document.getElementById('ph').value.trim();
     var adult=document.getElementById('adult').checked, rules=document.getElementById('rules').checked;
     var sid=document.getElementById('sid').value.trim(), dept=document.getElementById('dept').value.trim();
@@ -423,10 +469,11 @@ textarea{width:100%;font:inherit;font-size:.9rem;color:var(--ink);background:var
     var ready=done&&!!w&&shortN===0&&agreed&&vid&&!!nm&&!!sid&&!!dept&&ph.replace(/\D/g,'').length>=9&&emOk&&adult&&scOk&&rules;
     btn.disabled=!ready; setGo(ready,out.value);
     var sb=document.getElementById('submit');
-    if(sb&&SCRIPT_URL){ sb.hidden=false; sb.disabled=!ready||sent; if(sent) sb.textContent='신청이 접수되었습니다' }
+    if(sb&&SCRIPT_URL){ sb.hidden=false; sb.disabled=!ready||sent; if(sent) sb.textContent=L('신청이 접수되었습니다','Application received') }
     if(Date.now()<noticeUntil) return;                 // a fresh warning is on screen: leave the message line to it
     msg.className='small '+(items.length&&!ready?'warn':'mut');
-    msg.textContent=!items.length?'가능한 시간을 칠해 주세요.':!w?'머리를 감고 가실지 먼저 골라 주세요.':!agreed?'개인정보 수집·이용에 동의해야 신청할 수 있습니다.':!vid?'영상 녹화에 동의해야 신청할 수 있습니다.':(!nm||!sid||!dept||ph.replace(/\D/g,'').length<9||!emOk)?'이름, 학번, 학과, 연락처, 이메일을 모두 올바르게 입력해 주세요.':!adult?'만 19세 이상이어야 참여할 수 있습니다.':scYes?'해당하는 항목이 있어 이번 실험에는 참여하실 수 없습니다.':!scAll?'참가 조건 확인에 체크해 주세요.':!rules?'참가비와 중도 하차 규정을 확인해 주세요.':shortN?'방문 한 번('+durText(N)+')보다 짧은 시간대가 '+shortN+'개 있습니다(빨간색). 늘리거나 지워 주세요.':!done?'서로 다른 날을 '+MINDAYS+'일 이상 칠해 주세요(지금 '+nDays+'일).':(SCRIPT_URL?'‘신청 보내기’를 누르면 바로 접수됩니다.':'');
+    msg.textContent=EN?(!items.length?'Please mark the times you are free.':!w?'First choose whether you will wash your hair.':!agreed?'You need to agree to the collection and use of personal information.':!vid?'You need to agree to the video recording.':(!nm||!sid||!dept||ph.replace(/\D/g,'').length<9||!emOk)?'Please fill in your name, student ID, department, phone and e-mail correctly.':!adult?'You need to be 19 or older to take part.':scYes?'One of the conditions applies to you, so you cannot take part this time.':!scAll?'Please confirm the eligibility check.':!rules?'Please read and agree to the fee and withdrawal rules.':shortN?shortN+' time block'+(shortN>1?'s are':' is')+' shorter than one visit ('+durD(N)+', in red). Extend or delete '+(shortN>1?'them':'it')+'.':!done?'Please mark at least '+MINDAYS+' different days (now '+nDays+').':(SCRIPT_URL?'Press ‘Send application’ to apply.':''))
+      :!items.length?'가능한 시간을 칠해 주세요.':!w?'머리를 감고 가실지 먼저 골라 주세요.':!agreed?'개인정보 수집·이용에 동의해야 신청할 수 있습니다.':!vid?'영상 녹화에 동의해야 신청할 수 있습니다.':(!nm||!sid||!dept||ph.replace(/\D/g,'').length<9||!emOk)?'이름, 학번, 학과, 연락처, 이메일을 모두 올바르게 입력해 주세요.':!adult?'만 19세 이상이어야 참여할 수 있습니다.':scYes?'해당하는 항목이 있어 이번 실험에는 참여하실 수 없습니다.':!scAll?'참가 조건 확인에 체크해 주세요.':!rules?'참가비와 중도 하차 규정을 확인해 주세요.':shortN?'방문 한 번('+durText(N)+')보다 짧은 시간대가 '+shortN+'개 있습니다(빨간색). 늘리거나 지워 주세요.':!done?'서로 다른 날을 '+MINDAYS+'일 이상 칠해 주세요(지금 '+nDays+'일).':(SCRIPT_URL?'‘신청 보내기’를 누르면 바로 접수됩니다.':'');
   }
   var sent=false;
   (function(){
@@ -434,25 +481,27 @@ textarea{width:100%;font:inherit;font-size:.9rem;color:var(--ink);background:var
     var esc=function(t){ return String(t==null?'':t).replace(/&/g,'&amp;').replace(/</g,'&lt;') };
     document.getElementById('lkgo').addEventListener('click',function(){
       var sid=document.getElementById('lksid').value.trim(), ph=document.getElementById('lkph').value.trim(), out=document.getElementById('lkout');
-      if(!sid||ph.replace(/\D/g,'').length<9){ out.textContent='학번과 연락처를 입력해 주세요.'; return }
-      out.textContent='확인하는 중…';
+      if(!sid||ph.replace(/\D/g,'').length<9){ out.textContent=L('학번과 연락처를 입력해 주세요.','Please enter your student ID and phone number.'); return }
+      out.textContent=L('확인하는 중…','Checking…');
       fetch(SCRIPT_URL+'?action=lookup&sid='+encodeURIComponent(sid)+'&phone='+encodeURIComponent(ph)).then(function(r){return r.json()}).then(function(d){
-        if(!d.found){ out.textContent='일치하는 신청 내역이 없습니다. 학번과 연락처를 확인해 주세요.'; return }
+        if(!d.found){ out.textContent=L('일치하는 신청 내역이 없습니다. 학번과 연락처를 확인해 주세요.','No matching application. Please check your student ID and phone number.'); return }
         var st=d.status==='대기'?'검토 중':d.status;
+        if(EN) st={'대기':'Under review','확정':'Confirmed','취소':'Cancelled','마감 안내':'Recruitment closed'}[d.status||'대기']||d.status;
         var sch=String(d.schedule||''), k=sch.indexOf('가능한 일정 — ');
         if(k>=0) sch=sch.slice(k+9);
         var e2=sch.indexOf(' | 머리 감기'); if(e2>=0) sch=sch.slice(0,e2);
+        if(EN){ DOW.forEach(function(k,i){ sch=sch.split('('+k+')').join('('+DOWD[i]+')') }); sch=sch.replace(/(\d+\/\d+) 주/g,'Week of $1') }
         var sh=sch.split(' | ').map(function(g){
           var c=g.indexOf(': '), head=c>=0?g.slice(0,c):'', days=(c>=0?g.slice(c+2):g).split(' / ');
           return '<div style="margin-bottom:6px"><b>'+esc(head)+'</b><br>'+days.map(esc).join('<br>')+'</div>';
         }).join('');
         out.innerHTML='<dl style="display:grid;grid-template-columns:auto 1fr;gap:6px 12px;margin:0">'
-          +'<dt class="mut">이름</dt><dd style="margin:0">'+esc(d.name)+'</dd>'
-          +'<dt class="mut">접수 시각</dt><dd style="margin:0">'+esc(d.submitted)+'</dd>'
-          +'<dt class="mut">가능한 일정</dt><dd style="margin:0">'+sh+'</dd>'
-          +'<dt class="mut">머리 감기</dt><dd style="margin:0">'+esc(d.wash)+'</dd>'
-          +'<dt class="mut">상태</dt><dd style="margin:0"><b>'+esc(st)+'</b></dd></dl>';
-      }).catch(function(){ out.textContent='확인하지 못했습니다. 잠시 뒤 다시 시도해 주세요.' });
+          +'<dt class="mut">'+L('이름','Name')+'</dt><dd style="margin:0">'+esc(d.name)+'</dd>'
+          +'<dt class="mut">'+L('접수 시각','Received')+'</dt><dd style="margin:0">'+esc(d.submitted)+'</dd>'
+          +'<dt class="mut">'+L('가능한 일정','Your times')+'</dt><dd style="margin:0">'+sh+'</dd>'
+          +'<dt class="mut">'+L('머리 감기','Hair washing')+'</dt><dd style="margin:0">'+esc(EN?(d.wash==='감음'?'yes':d.wash==='안 감음'?'no':d.wash):d.wash)+'</dd>'
+          +'<dt class="mut">'+L('상태','Status')+'</dt><dd style="margin:0"><b>'+esc(st)+'</b></dd></dl>';
+      }).catch(function(){ out.textContent=L('확인하지 못했습니다. 잠시 뒤 다시 시도해 주세요.','Could not check. Please try again in a moment.') });
     });
   })();
   function payload(){
@@ -460,39 +509,39 @@ textarea{width:100%;font:inherit;font-size:.9rem;color:var(--ink);background:var
     var wins=items.map(function(x){ return {week:W0+x.w,c:x.c,s:hhmm(x.s),e:hhmm(x.e)} });   // week counted from EPOCH, so the admin page reads week*7+c
     return {name:g('nm').value.trim(),sid:g('sid').value.trim(),dept:g('dept').value.trim(),phone:g('ph').value.trim(),email:g('em').value.trim(),
       wash:wash(),visitMin:need(),schedule:g('out').value,windows:wins,
-      consent:g('agree').checked,video:g('vid').checked,rules:g('rules').checked,adult:g('adult').checked};
+      consent:g('agree').checked,video:g('vid').checked,rules:g('rules').checked,adult:g('adult').checked,lang:EN?'en':''};
   }
   document.addEventListener('click',function(e){
     if(e.target.id!=='submit'||!SCRIPT_URL||sent) return;
-    var sb=e.target; sb.disabled=true; sb.textContent='보내는 중…';
+    var sb=e.target; sb.disabled=true; sb.textContent=L('보내는 중…','Sending…');
     fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload())})
       .then(function(){
         sent=true;
         var nm=document.getElementById('nm').value.trim();
-        document.getElementById('doneWho').textContent=nm+'님, 참가 신청해 주셔서 감사합니다.';
+        document.getElementById('doneWho').textContent=L(nm+'님, 참가 신청해 주셔서 감사합니다.','Thank you for signing up, '+nm+'.');
         document.querySelector('.wrap').hidden=true;
         document.getElementById('done').hidden=false;
         window.scrollTo(0,0);
       })
-      .catch(function(){ sb.disabled=false; sb.textContent='신청 보내기'; notice('전송에 실패했습니다. 인터넷 연결을 확인하고 다시 눌러 주세요.') });
+      .catch(function(){ sb.disabled=false; sb.textContent=L('신청 보내기','Send application'); notice(L('전송에 실패했습니다. 인터넷 연결을 확인하고 다시 눌러 주세요.','Sending failed. Please check your internet connection and press again.')) });
   });
   /* closed page: sign up for the next recruitment (name + email, phone optional) */
   function nfCheck(){
     var em=document.getElementById('nfem').value.trim(), ok=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)&&document.getElementById('nfok').checked;
     document.getElementById('nfgo').disabled=!ok;
-    document.getElementById('nfmsg').textContent=ok?'':'이메일과 동의가 있어야 신청할 수 있습니다.';
+    document.getElementById('nfmsg').textContent=ok?'':L('이메일과 동의가 있어야 신청할 수 있습니다.','An e-mail address and your consent are needed.');
   }
   ['nfnm','nfem','nfph'].forEach(function(i){document.getElementById(i).addEventListener('input',function(e){
     if(i==='nfph'){var f=fmtPhone(e.target.value,/^delete/.test(e.inputType||''));if(e.target.value!==f)e.target.value=f}
     nfCheck()})});
   document.getElementById('nfok').addEventListener('change',nfCheck);
   document.getElementById('nfgo').addEventListener('click',function(){
-    var b=this; if(!SCRIPT_URL) return; b.disabled=true; b.textContent='보내는 중…';
+    var b=this; if(!SCRIPT_URL) return; b.disabled=true; b.textContent=L('보내는 중…','Sending…');
     var g=function(i){return document.getElementById(i).value.trim()};
     fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},
-      body:JSON.stringify({kind:'notify',name:g('nfnm'),email:g('nfem'),phone:g('nfph'),consent:document.getElementById('nfok').checked})})
+      body:JSON.stringify({kind:'notify',name:g('nfnm'),email:g('nfem'),phone:g('nfph'),consent:document.getElementById('nfok').checked,lang:EN?'en':''})})
       .then(function(){document.getElementById('nfForm').hidden=true;document.getElementById('nfDone').hidden=false})
-      .catch(function(){b.disabled=false;b.textContent='알림 신청';document.getElementById('nfmsg').textContent='전송에 실패했습니다. 인터넷 연결을 확인하고 다시 눌러 주세요.'});
+      .catch(function(){b.disabled=false;b.textContent=L('알림 신청','Sign up');document.getElementById('nfmsg').textContent=L('전송에 실패했습니다. 인터넷 연결을 확인하고 다시 눌러 주세요.','Sending failed. Please check your internet connection and press again.')});
   });
   if(SCRIPT_URL){
     fetch(SCRIPT_URL+'?action=period').then(function(r){return r.json()}).then(function(p){
@@ -531,7 +580,7 @@ textarea{width:100%;font:inherit;font-size:.9rem;color:var(--ink);background:var
       var id0=seq++, ids=[id0];
       items.push({id:id0,w:+col.dataset.w,c:+col.dataset.c,s:clampT(m),e:clampT(m)+STEP});
       drag={mode:'create',id:ids[0],ids:ids,y0:e.clientY,anchor:clampT(m),col:col,moved:false};
-      if(anyClash()){ items=items.filter(function(x){return ids.indexOf(x.id)<0}); drag=null; notice('그 시간은 모집이 끝났습니다.'); render(); return }
+      if(anyClash()){ items=items.filter(function(x){return ids.indexOf(x.id)<0}); drag=null; notice(L('그 시간은 모집이 끝났습니다.','That time is no longer available.')); render(); return }
     }else return;
     e.preventDefault();
     try{ (e.target.setPointerCapture||function(){}).call(e.target,e.pointerId) }catch(x){}
@@ -557,7 +606,7 @@ textarea{width:100%;font:inherit;font-size:.9rem;color:var(--ink);background:var
     var b=byId(drag.id);
     if(b&&drag.mode==='create'&&!drag.moved){      // a plain click: one visit's worth of time around the click
       var n=need(), s=Math.max(T0,Math.min(T1-n,snap(drag.anchor-n/2)));
-      if(!settle(drag.ids,s,n)){ var gone=drag.ids; items=items.filter(function(x){return gone.indexOf(x.id)<0}); notice('그 요일에는 방문 한 번이 들어갈 빈 시간이 없습니다.'); }
+      if(!settle(drag.ids,s,n)){ var gone=drag.ids; items=items.filter(function(x){return gone.indexOf(x.id)<0}); notice(L('그 요일에는 방문 한 번이 들어갈 빈 시간이 없습니다.','That day has no free time long enough for one visit.')); }
     }
     drag=null; merge(); render();
   }
@@ -585,7 +634,7 @@ textarea{width:100%;font:inherit;font-size:.9rem;color:var(--ink);background:var
       e.preventDefault();
       var col=e.target, n=need(), s=snap(Math.max(T0,mins('10:00'))), id2=seq++, ids2=[id2];
       items.push({id:id2,w:+col.dataset.w,c:+col.dataset.c,s:s,e:Math.min(T1,s+n)});
-      if(!settle(ids2,s,n)){ items=items.filter(function(x){return ids2.indexOf(x.id)<0}); notice('그 요일에는 방문 한 번이 들어갈 빈 시간이 없습니다.'); }
+      if(!settle(ids2,s,n)){ items=items.filter(function(x){return ids2.indexOf(x.id)<0}); notice(L('그 요일에는 방문 한 번이 들어갈 빈 시간이 없습니다.','That day has no free time long enough for one visit.')); }
       merge(); render();
     }
   });
@@ -604,10 +653,10 @@ textarea{width:100%;font:inherit;font-size:.9rem;color:var(--ink);background:var
     if(e.target.id==='nm'||e.target.id==='ph'||e.target.id==='sid'||e.target.id==='dept'||e.target.id==='em') summarize();
   });
   var resetBtn=document.getElementById('reset'), resetT=0;
-  function resetLabel(){ resetBtn.textContent='초기화'; resetBtn.dataset.armed=''; }
+  function resetLabel(){ resetBtn.textContent=L('초기화','Clear'); resetBtn.dataset.armed=''; }
   resetBtn.addEventListener('click',function(){
     if(resetBtn.dataset.armed!=='1'){                  // first press asks, second press clears
-      resetBtn.dataset.armed='1'; resetBtn.textContent='정말 지울까요? 한 번 더 누르세요';
+      resetBtn.dataset.armed='1'; resetBtn.textContent=L('정말 지울까요? 한 번 더 누르세요','Clear everything? Press again');
       clearTimeout(resetT); resetT=setTimeout(resetLabel,3500); return;
     }
     clearTimeout(resetT); resetLabel();
