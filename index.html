@@ -122,6 +122,24 @@ textarea{width:100%;font:inherit;font-size:.9rem;color:var(--ink);background:var
     <p class="small mut" style="margin:10px 0 0">문의: 010-3190-4473 (문자·전화) 또는 cetgth@unist.ac.kr</p>
   </section>
 
+  <section class="panel" id="notifyBox" hidden>
+    <h2>다음 실험 알림 받기</h2>
+    <p class="small mut" style="margin:0 0 10px">다음 모집이 시작되면 이메일로 가장 먼저 알려 드립니다.</p>
+    <div id="nfForm">
+      <div class="grid2">
+        <label class="fld">이름<input type="text" id="nfnm" autocomplete="name" maxlength="30"></label>
+        <label class="fld">이메일<input type="email" id="nfem" autocomplete="email" maxlength="80" placeholder="name@unist.ac.kr"></label>
+        <label class="fld">연락처 (선택)<input type="tel" id="nfph" inputmode="numeric" autocomplete="tel" maxlength="13" placeholder="010-0000-0000"></label>
+      </div>
+      <label class="agree"><input type="checkbox" id="nfok"><span><b>[필수]</b> 다음 모집 안내를 위해 이름 · 이메일 · 연락처를 수집 · 이용하는 데 동의합니다. 다음 모집 안내 뒤 파기하며, 원하시면 언제든 메일로 삭제를 요청할 수 있습니다.</span></label>
+      <div style="display:flex;gap:10px;align-items:center;margin-top:12px;flex-wrap:wrap">
+        <button class="btn" id="nfgo" type="button" disabled>알림 신청</button>
+        <span class="small mut" id="nfmsg">이메일과 동의가 있어야 신청할 수 있습니다.</span>
+      </div>
+    </div>
+    <p id="nfDone" hidden style="margin:0"><b>알림 신청이 접수되었습니다.</b> 다음 모집이 시작되면 메일로 알려 드리겠습니다.</p>
+  </section>
+
   <section class="panel">
     <h2>실험 안내</h2>
     <dl class="facts">
@@ -458,10 +476,28 @@ textarea{width:100%;font:inherit;font-size:.9rem;color:var(--ink);background:var
       })
       .catch(function(){ sb.disabled=false; sb.textContent='신청 보내기'; notice('전송에 실패했습니다. 인터넷 연결을 확인하고 다시 눌러 주세요.') });
   });
+  /* closed page: sign up for the next recruitment (name + email, phone optional) */
+  function nfCheck(){
+    var em=document.getElementById('nfem').value.trim(), ok=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)&&document.getElementById('nfok').checked;
+    document.getElementById('nfgo').disabled=!ok;
+    document.getElementById('nfmsg').textContent=ok?'':'이메일과 동의가 있어야 신청할 수 있습니다.';
+  }
+  ['nfnm','nfem','nfph'].forEach(function(i){document.getElementById(i).addEventListener('input',function(e){
+    if(i==='nfph'){var f=fmtPhone(e.target.value,/^delete/.test(e.inputType||''));if(e.target.value!==f)e.target.value=f}
+    nfCheck()})});
+  document.getElementById('nfok').addEventListener('change',nfCheck);
+  document.getElementById('nfgo').addEventListener('click',function(){
+    var b=this; if(!SCRIPT_URL) return; b.disabled=true; b.textContent='보내는 중…';
+    var g=function(i){return document.getElementById(i).value.trim()};
+    fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body:JSON.stringify({kind:'notify',name:g('nfnm'),email:g('nfem'),phone:g('nfph'),consent:document.getElementById('nfok').checked})})
+      .then(function(){document.getElementById('nfForm').hidden=true;document.getElementById('nfDone').hidden=false})
+      .catch(function(){b.disabled=false;b.textContent='알림 신청';document.getElementById('nfmsg').textContent='전송에 실패했습니다. 인터넷 연결을 확인하고 다시 눌러 주세요.'});
+  });
   if(SCRIPT_URL){
     fetch(SCRIPT_URL+'?action=period').then(function(r){return r.json()}).then(function(p){
       if(p&&p.closed===true){   // recruitment closed on the admin page: only the closing notice stays
-        document.querySelectorAll('.wrap > section, .wrap > details').forEach(function(el){el.hidden=el.id!=='closedMsg'});
+        document.querySelectorAll('.wrap > section, .wrap > details').forEach(function(el){el.hidden=el.id!=='closedMsg'&&el.id!=='notifyBox'});
         var hp=document.querySelector('.wrap > header p'); if(hp) hp.hidden=true;
         return;
       }
